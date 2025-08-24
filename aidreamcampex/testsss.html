@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <title>Netflix Clone</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{background:#141414;color:#fff;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif}
+
+  
+    .banner{position:relative;height:60vh;background:url("https://search.pstatic.net/common/?src=http%3A%2F%2Fblogfiles.naver.net%2FMjAyMjA2MjhfNTgg%2FMDAxNjU2NDAzODQyNzg3.cuPNjfNgsdsIKgkJTvoq1IgHL5fT60QkNlyHb-rMx7Ig.S4OeTw7r5jWW1WzpPpDAjSfJyDgu2Amm9eO6VRmzx0Eg.JPEG.onyour_mars%2F%25B4%25D9%25BF%25EE%25B7%25CE%25B5%25E5%25C6%25C4%25C0%25CF%25A3%25DF20220628%25A3%25DF164206.jpg&type=sc960_832") center/cover no-repeat}
+    .banner::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(20,20,20,1)10%,rgba(20,20,20,0.2)40%,rgba(20,20,20,0.2)60%,rgba(20,20,20,1)100%)}
+    .banner__contents{position:absolute;bottom:25%;left:3%;z-index:1;max-width:40rem}
+    .banner__title{font-size:3rem;font-weight:800;margin-bottom:.5rem}
+    .banner__buttons{display:flex;gap:1rem;margin-top:1rem}
+    .btn{cursor:pointer;padding:.5rem 1.5rem;font-size:1rem;border:none;border-radius:.2vw;font-weight:700;background:rgba(51,51,51,.7);color:#fff;transition:background .2s}
+    .btn:hover{background:#e6e6e6;color:#000}
+
+    /* -------- Row -------- */
+    .row{margin-left:1.5rem;margin-top:2rem}
+    .row__title{font-size:1.4rem;font-weight:700;margin-bottom:.5rem}
+    .row__posters{display:flex;gap:.5rem;overflow-x:auto;overflow-y:hidden;padding-bottom:1rem;scroll-behavior:smooth}
+    .row__posters::-webkit-scrollbar{height:8px}
+    .row__posters::-webkit-scrollbar-thumb{background:#333}
+    .row__poster{width:10vw;min-width:160px;max-width:240px;aspect-ratio:2/3;object-fit:cover;border-radius:.2vw;transition:transform .3s}
+    .row__poster:hover{transform:scale(1.08);z-index:3}
+
+    /* -------- Responsive -------- */
+    @media(max-width:768px){
+      .banner__title{font-size:2rem}
+      .row__poster{width:30vw}
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Banner -->
+  <header class="banner">
+    <div class="banner__contents">
+      <h1 class="banner__title">종이의 집</h1>
+      
+      <div class="banner__buttons">
+        <button class="btn">Play</button>
+        <button class="btn">My List</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Netflix Originals Row -->
+  <section class="row">
+    <h2 class="row__title">넷플릭스 추천</h2>
+    <div class="row__posters">
+      <img class="row__poster" src="https://search.pstatic.net/common/?src=http%3A%2F%2Fblogfiles.naver.net%2FMjAyNTA0MDZfMjQw%2FMDAxNzQzODg0MjAwNTMw.8SrGgninCg_g-kdhxvz1BbJGJYvPoqhRGYSH0RCE5_Ig.DOMUGZX1NygN7UOVOFT2kIYWWNAqADvnxMrTy87JMG4g.JPEG%2F%25BE%25E0%25C7%25D1%25BF%25B5%25BF%25F52.jpg&type=sc960_832" alt="약한영웅">
+      <img class="row__poster" src="https://search.pstatic.net/common/?src=http%3A%2F%2Fblogfiles.naver.net%2FMjAyNTA0MTFfMTkx%2FMDAxNzQ0MzM3MDc5MzAy.KPFiZtzM1h0f2F5CjKBoi22-uW9Gz1-1Et2n8PzCH_Qg.lhJQFBe87fRhpCtqwticUcF6XfchXAUa-LnwLiz4Igwg.PNG%2Fimage.png&type=a340" alt="언젠가는 슬기로울 전공의생활">
+      <img class="row__poster" src="https://search.pstatic.net/common/?src=http%3A%2F%2Fblogfiles.naver.net%2FMjAyNTAxMjNfMjMg%2FMDAxNzM3NjEzNzA0NDU0.PA_l6Cb1Vu_Dt-al1iTI64nvLyk8iuXHp3_ZRuQA_QIg._0gH1F3Ms8n0LBdKXv5Eyt_6Nq6avlT0mMquJIzNvUsg.JPEG%2F900%25A3%25DFScreenshot%25A3%25DF20250123%25A3%25DF152804%25A3%25DFSamsung_Internet.jpg&type=a340" alt="폭삭 속았수다">
+      <img class="row__poster" src="https://search.pstatic.net/common/?src=http%3A%2F%2Fblogfiles.naver.net%2FMjAyNTA1MDZfMTk5%2FMDAxNzQ2NTAzNzMzMTc2.iPHwGKFDnkhmoNLER1GDO2UHJzznwvBvxuC1pOzSgiMg.sI7hNvh0rExfc2_dzv3B3kSqFiCsId7PWd23BQePTpMg.PNG%2Fimage.png&type=a340" alt="데블스플랜">
+      <img class="row__poster" src="https://search.pstatic.net/common/?src=http%3A%2F%2Fblogfiles.naver.net%2FMjAyNDAyMThfMjAx%2FMDAxNzA4MjMwNjMzNDcz.K2GDRNDjpVFMvTYKQeWXS95r51jBQ1Z4g8tPmBZ5WO4g.AY5SXUIBMdvI1eIvT0a5uHg18e13KMGKvT2sFDMW_I0g.PNG.borry78%2Fimage.png&type=a340" alt="살인자ㅇ난감">
+      <img class="row__poster" src="https://search.pstatic.net/sunny/?src=https%3A%2F%2Fwatching-img.pickle.plus%2Fposter%2Ff16764dc-a125-4fe5-86e0-2429b0fca28e-1728387604571.jpg%3Fw%3D640%26q%3D75%26format%3Dwebp&type=a340" alt="블루록">
+      <img class="row__poster" src="https://search.pstatic.net/common/?src=http%3A%2F%2Fblogfiles.naver.net%2FMjAyMjEyMTJfMjY1%2FMDAxNjcwNzk4MDg1MDQ2.g70bOFYErJ3ADzQci8NlL5WDdgBRcVxxnVbQNA14HkEg._VjZRuZsefgvx0-1SbktjHiQPofQ6kYBkuzrXeV1OKgg.JPEG.csm7%2F1670798084624.jpg&type=a340" alt="태어난김에 세계일주">
+      <img class="row__poster" src="https://search.pstatic.net/common/?src=http%3A%2F%2Fblogfiles.naver.net%2FMjAyNTA0MThfNjkg%2FMDAxNzQ0OTcxMjYxNDQ5.A8LRkJk9mNWCngZadJGKKXosyYkvXMJK_hOo-meiRyEg.8QtVSlP0Oe4jlqnR5mcm2LQUbpwltXqWe1T8YGiA1Ygg.PNG%2F%25C4%25B8%25C3%25B3_2025_04_18_18_52_04_786.png&type=a340" alt="귀궁">
+    </div>
+  </section>
+
+  <!-- Trending Row -->
+  <section class="row">
+    <h2 class="row__title">애니메이션</h2>
+    <div class="row__posters">
+      <img class="row__poster" src="https://search.pstatic.net/sunny/?src=https%3A%2F%2Fi.namu.wiki%2Fi%2F-_XPmFoQ2otseMPiKj435E3GHW9WRhTsTic615GurLMsbgIYg4K3v2CID6pKkgu2o1FCg-AK8mf4vkHfumzhIw.webp&type=a340" alt="징송의 프리렌">
+      <img class="row__poster" src="https://search.pstatic.net/common/?src=http%3A%2F%2Fblogfiles.naver.net%2FMjAyNDAxMzBfMjcx%2FMDAxNzA2NTg2MjQ0NTA4.UYYB6PWhYaLoCZQl6aBcf72b6HTFPLlU2Bl0E86bosMg.nw8KmBqiO0hTnmJoNSHEPDPiaORPizt9uzZGyUH25scg.JPEG.taehu12%2F%25C1%25F8%25B0%25DD%25C6%25C4%25C0%25CC%25B3%25CE_%25280%2529.jpg&type=a340" alt="진격의 거인">
+      <img class="row__poster" src="https://search.pstatic.net/sunny/?src=https%3A%2F%2Fimages.justwatch.com%2Fposter%2F302524884%2Fs718%2F%25EC%258B%259C%25EC%25A6%258C-1.jpg&type=a340" alt="빈란드사가">
+      <img class="row__poster" src="https://search.pstatic.net/common/?src=http%3A%2F%2Fblogfiles.naver.net%2FMjAyNDA1MDhfMTM1%2FMDAxNzE1MDk4NzM0MjA0.d9bNF8oLdcPexqTFp5KnFCBu8jtMD6j6h3VAbrbU9igg.6jdWNRj-jN6NRm8hBwcGnb1r2CaxHH1lQBBmNnhr3Hsg.JPEG%2FIMG_2161.JPG&type=a340" alt="신세기 에반게리온">
+      <img class="row__poster" src="https://search.pstatic.net/sunny/?src=https%3A%2F%2Fan2-img.amz.wtchn.net%2Fimage%2Fv2%2Fg5oZLIbBu5l0LciPgSQKbw.jpg%3Fjwt%3DZXlKaGJHY2lPaUpJVXpJMU5pSjkuZXlKdmNIUnpJanBiSW1SZk5Ea3dlRGN3TUhFNE1DSmRMQ0p3SWpvaUwzWXlMM04wYjNKbEwySnZiMnN2TVRZMU5UZzNOams1T1RBeE1URXdPVEkxTkNKOS5rVjdFRmNZNXFUSUpVY3E3VVNMbl9aSTVHNjFpVTYxWjRuZmhkdERhcVdR&type=a340" alt="귀멸의 칼날">
+      <img class="row__poster" src="https://search.pstatic.net/common/?src=http%3A%2F%2Fblogfiles.naver.net%2FMjAyNDA3MjVfMjcg%2FMDAxNzIxODgwMzc0OTg2.NV-Rfaub1iMbP0whLnOq59QIrSlllRgLelpcxpgDiXgg.8XVLh5mq8AlwdB2U2SkOEFGKF0HWSEvGCXg6bd6-zVEg.JPEG%2F20240725%25A3%25DF125354.jpg&type=a340" alt="나 혼자만 레벨업">
+      <img class="row__poster" src="https://search.pstatic.net/common/?src=http%3A%2F%2Fshopping.phinf.naver.net%2Fmain_4296770%2F42967709921.5.20231007152557.jpg&type=a340" alt="블리치">
+      <img class="row__poster" src="https://search.pstatic.net/common/?src=http%3A%2F%2Fblogfiles.naver.net%2FMjAyMzAxMjBfODAg%2FMDAxNjc0MTQyMTcxNTk5.mVexJ1KqHc6-Pf1slVWR1UQ-KMw0QJYBBj0x2F1XyBQg.rkppZBpX2wWE5VAIEQ1RG5cUFT_XuUpmIoMonCNGsLYg.PNG.dlqnf33%2Fimage.png&type=a340" alt="체인소 맨">
+    </div>
+  </section>
+
+</body>
+</html>
