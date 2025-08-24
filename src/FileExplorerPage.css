@@ -1,0 +1,95 @@
+
+.explorer-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 24px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 16px;
+}
+
+.back-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: 1px solid #e0e0e0;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  font-size: 20px;
+  color: var(--text-gray);
+  cursor: pointer;
+  margin-right: 16px;
+  transition: all 0.2s;
+}
+
+.back-button:hover {
+  background-color: #f0f0f0;
+  border-color: #ccc;
+}
+
+.breadcrumbs {
+  /* 기존 margin-bottom과 padding-bottom은 .explorer-header로 이동했으므로 삭제 */
+  font-size: 16px;
+  color: var(--text-gray);
+}
+
+.explorer-box {
+  width: 100%;
+  max-width: 1000px;
+  min-height: 500px;
+  border: 1px solid #e0e0e0;
+  border-radius: 16px;
+  padding: 32px;
+  background-color: #fdfdfd;
+}
+
+.breadcrumbs {
+  font-size: 16px;
+  color: var(--text-gray);
+  margin-bottom: 24px;
+}
+.breadcrumbs a {
+  color: var(--text-gray);
+  text-decoration: none;
+}
+.breadcrumbs a:hover {
+  text-decoration: underline;
+}
+.breadcrumbs span {
+  margin: 0 8px;
+}
+
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 24px;
+}
+
+.folder-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  text-align: center;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background-color 0.2s;
+  color: var(--text-dark);
+  text-decoration: none;
+}
+.folder-item:hover {
+  background-color: #f0f0f0;
+}
+.folder-item svg {
+  width: 64px;
+  height: 64px;
+  color: var(--primary-dark-green);
+  margin-bottom: 8px;
+}
+.folder-item span {
+  font-size: 14px;
+  font-weight: 500;
+}
+
