@@ -1,35 +1,36 @@
+# app/main.py
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
 
-from app.core.config import settings
-from app.routers import auth, users, subjects, schedules, materials, uploads
-import os
-app = FastAPI(title=settings.APP_NAME)
+# ✅ routers 서브패키지에서 상대 임포트
+from app.routers.auth import router as auth_router
+from app.routers.users import router as users_router
+from app.routers.subjects import router as subjects_router
+from app.routers.materials import router as materials_router
+from app.routers.uploads import router as uploads_router
+from app.routers.schedules import router as schedules_router
+from app.routers import misc  # 이미 있는 라우터들과 함께
 
-# CORS
+app = FastAPI()
+
+# Vite 프론트(5173) 허용
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.BACKEND_CORS_ORIGINS,
+    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Routers
-api_prefix = settings.API_V1_PREFIX
-app.include_router(auth.router, prefix=api_prefix, tags=["auth"])
-app.include_router(users.router, prefix=api_prefix, tags=["users"])
-app.include_router(subjects.router, prefix=api_prefix, tags=["subjects"])
-app.include_router(schedules.router, prefix=api_prefix, tags=["schedules"])
-app.include_router(materials.router, prefix=api_prefix, tags=["materials"])
-app.include_router(uploads.router, prefix=api_prefix, tags=["uploads"])
+# ⚠️ 라우터 안에 이미 prefix="/auth" 등 개별 prefix가 있다면,
+# 여기서는 공통으로 "/api"만 한 번 붙이면 됩니다. (/api/auth, /api/users 등)
+app.include_router(auth_router, prefix="/api")
+app.include_router(users_router, prefix="/api")
+app.include_router(subjects_router, prefix="/api")
+app.include_router(materials_router, prefix="/api")
+app.include_router(schedules_router, prefix="/api")
+app.include_router(uploads_router, prefix="/api")
 
-# Static media
-os.makedirs(settings.MEDIA_ROOT, exist_ok=True)
-
-app.mount("/media", StaticFiles(directory=settings.MEDIA_ROOT), name="media")
-
-@app.get("/health")
+@app.get("/api/health")
 def health():
     return {"status": "ok"}
