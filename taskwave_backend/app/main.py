@@ -15,7 +15,8 @@ from app.routers.materials import router as materials_router
 from app.routers.uploads import router as uploads_router
 from app.routers.schedules import router as schedules_router
 from app.routers import misc  # misc.router 사용
-
+from app.db.session import engine
+from app.db.base import Base
 app = FastAPI()
 
 
@@ -73,6 +74,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.on_event("startup")
+def _startup_create_tables():
+    # alembic이 실패하더라도 최소한 필요한 테이블은 생성
+    Base.metadata.create_all(bind=engine)
+    
 # 라우터: 각 라우터 안에 /auth 등 개별 prefix가 이미 있으므로 여기서는 공통 "/api"만
 app.include_router(auth_router, prefix="/api")
 app.include_router(users_router, prefix="/api")
