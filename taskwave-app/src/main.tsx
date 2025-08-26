@@ -1,7 +1,12 @@
 // src/main.tsx
+
 import React from 'react'
 import ReactDOM from 'react-dom/client'
+import { BrowserRouter } from 'react-router-dom'
+import { AuthProvider } from './context/AuthContext.tsx' // 1. AuthProvider 임포트
 import App from './App.tsx'
+import './index.css'
+// src/main.tsx
 
 // 기존 전역
 import './index.css'
@@ -14,7 +19,6 @@ import './LoginPage.css'
 import './MyPage.css'
 import './SignupPage.css'
 import './AdditionalInfoPage.css'
-
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <BrowserRouter>
