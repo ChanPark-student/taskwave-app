@@ -1,0 +1,17 @@
+
+services:
+  - type: web
+    name: taskwave-backend
+    env: python
+    rootDir: .
+    buildCommand: pip install -r requirements.txt
+    startCommand: alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000
+    plan: free
+    autoDeploy: false
+    envVars:
+      - key: ENV
+        value: prod
+      - key: SECRET_KEY
+        generateValue: true
+      - key: CORS_ORIGINS
+        value: https://your-frontend-domain.com

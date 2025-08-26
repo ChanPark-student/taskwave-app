@@ -1,0 +1,131 @@
+/* 로그인 페이지 전체를 감싸고 화면 정중앙에 배치하는 컨테이너 */
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  width: 100%;
+  padding: 24px;
+}
+
+/* 흰색 박스 (로고, 폼 등을 담는 영역) */
+.login-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 380px;
+}
+
+.login-logo {
+  font-weight: 800;
+  font-size: 32px;
+  color: var(--primary-dark-green);
+  margin-bottom: 16px;
+}
+
+.login-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-dark);
+  margin-bottom: 40px;
+}
+
+.login-form {
+  width: 100%;
+}
+
+.form-group {
+  width: 100%;
+  margin-bottom: 24px;
+  text-align: left;
+}
+
+.label-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 8px;
+}
+
+.label-wrapper label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-dark);
+}
+
+.forgot-password-link {
+  font-size: 13px;
+  color: var(--text-gray);
+}
+.forgot-password-link:hover {
+  text-decoration: underline;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 14px 16px;
+  border: 1px solid var(--border-gray);
+  border-radius: 8px;
+  font-size: 16px;
+  font-family: inherit; /* index.css의 폰트를 상속받도록 설정 */
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: var(--primary-dark-green);
+  box-shadow: 0 0 0 2px rgba(0, 77, 64, 0.2);
+}
+
+.password-input-wrapper {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.password-input-wrapper input {
+  padding-right: 40px;
+}
+
+.password-toggle-icon {
+  position: absolute;
+  right: 14px;
+  cursor: pointer;
+  color: var(--text-gray);
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+}
+
+.submit-button {
+  width: 100%;
+  padding: 16px;
+  border-radius: 8px;
+  background-color: var(--primary-dark-green);
+  color: white;
+  font-size: 16px;
+  font-weight: 700;
+  transition: all 0.2s ease-in-out;
+  margin-top: 16px;
+}
+
+.submit-button:hover {
+  opacity: 0.9;
+}
+
+.footer-link-container {
+  margin-top: 24px;
+  font-size: 14px;
+  color: var(--text-gray);
+}
+
+.create-account-link {
+  color: var(--primary-dark-green);
+  font-weight: 600;
+  cursor: pointer;
+}
+.create-account-link:hover {
+  text-decoration: underline;
+}

@@ -1,0 +1,82 @@
+.app-header {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 24px 0;
+}
+
+.header-content {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 32px;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  font-weight: 800;
+  font-size: 28px;
+  color: var(--primary-dark-green);
+  cursor: pointer;
+}
+
+/* ... (기존 .auth-buttons, .btn-login, .btn-signup 스타일은 그대로 사용) ... */
+.auth-buttons button {
+  font-family: 'Pretendard', sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+.btn-login { /* ... */ }
+.btn-signup { /* ... */ }
+
+.profile-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 2px solid var(--primary-dark-green);
+  color: var(--primary-dark-green);
+  font-size: 20px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+.profile-icon:hover {
+  background-color: var(--primary-dark-green);
+  color: white;
+}
+
+/* --- 이 코드를 Header.css 맨 아래에 추가 --- */
+
+/* 헤더 오른쪽 아이콘들을 담는 컨테이너 */
+.profile-container {
+  display: flex;
+  align-items: center;
+  gap: 16px; /* 아이콘 사이 간격 */
+}
+
+/* 기존 profile-icon -> header-icon 으로 이름 변경 및 스타일 통일 */
+.header-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 2px solid var(--primary-dark-green);
+  color: var(--primary-dark-green);
+  font-size: 20px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+.header-icon:hover {
+  background-color: var(--primary-dark-green);
+  color: white;
+}
