@@ -1,4 +1,3 @@
-from logging.config import fileConfig
 import os
 import sys
 from pathlib import Path
@@ -6,16 +5,12 @@ from pathlib import Path
 from alembic import context
 from sqlalchemy import engine_from_config, pool
 
-# === Python path 보정: /app (백엔드 루트) 추가 ===
+# === PYTHONPATH 보정: /app 추가 (컨테이너에서 /app/app 가 패키지 루트) ===
 BASE_DIR = Path(__file__).resolve().parents[1]  # /app
-sys.path.insert(0, str(BASE_DIR))
+if str(BASE_DIR) not in sys.path:
+    sys.path.insert(0, str(BASE_DIR))
 
-# Alembic Config 객체
 config = context.config
-
-# 로깅 설정
-if config.config_file_name is not None:
-    fileConfig(config.config_file_name)
 
 # === psycopg(v3) 드라이버 사용하도록 URL 정규화 ===
 def _normalize_url(url: str) -> str:
@@ -44,9 +39,9 @@ def run_migrations_offline() -> None:
         context.run_migrations()
 
 def run_migrations_online() -> None:
-    cfg = config.get_section(config.config_ini_section)
-    url_env = os.getenv("DATABASE_URL", "sqlite:///./taskwave.db")
-    cfg["sqlalchemy.url"] = _normalize_url(url_env)
+    cfg = config.get_section(config.config_ini_section) or {}
+    url_env = _normalize_url(os.getenv("DATABASE_URL", "sqlite:///./taskwave.db"))
+    cfg["sqlalchemy.url"] = url_env
 
     connectable = engine_from_config(
         cfg,

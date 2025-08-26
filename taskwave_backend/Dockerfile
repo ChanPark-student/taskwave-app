@@ -1,7 +1,7 @@
 FROM python:3.11-slim
 ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
 WORKDIR /app
-
+ENV TESSERACT_CMD=/usr/bin/tesseract
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential libpq-dev libgl1 libglib2.0-0 tesseract-ocr tesseract-ocr-kor \
  && rm -rf /var/lib/apt/lists/*
