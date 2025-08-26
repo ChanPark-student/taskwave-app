@@ -1,7 +1,8 @@
+import './Header.css';
+
 import { useNavigate } from 'react-router-dom';
 import { FiUser, FiFolder } from 'react-icons/fi';
 import { useAuth } from './context/AuthContext.tsx';
-import './Header.css';
 
 const Header = () => {
   const navigate = useNavigate();
