@@ -1,0 +1,165 @@
+.mypage-main-content {
+  width: 100%;
+  max-width: 1200px;
+  padding: 40px 24px;
+}
+
+.mypage-title {
+  font-size: 32px;
+  font-weight: 800;
+  margin-bottom: 40px;
+}
+
+.mypage-layout {
+  display: flex;
+  gap: 32px; /* 두 섹션 사이의 간격 */
+  align-items: flex-start;
+}
+
+/* 프로필과 시간표 섹션 공통 스타일 */
+.profile-section,
+.timetable-section {
+  border: 1px solid #e0e0e0;
+  border-radius: 16px;
+  padding: 32px;
+  background-color: #fdfdfd;
+}
+
+/* 프로필 섹션 */
+.profile-section {
+  flex: 1; /* 가변 너비 */
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #e0e0e0;
+  padding-bottom: 16px;
+  margin-bottom: 24px;
+}
+
+.section-header h2 {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.change-button {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-gray);
+}
+
+.profile-details p {
+  display: flex;
+  justify-content: space-between;
+  font-size: 16px;
+  margin: 16px 0;
+}
+.profile-details p strong {
+  font-weight: 700;
+}
+
+/* 시간표 섹션 */
+.timetable-section {
+  flex: 2; /* 프로필보다 2배 넓게 */
+}
+
+.timetable-upload-box {
+  text-align: center;
+}
+.timetable-upload-box h2 {
+  font-size: 20px;
+  margin-top: 0;
+  margin-bottom: 24px;
+}
+
+.upload-area {
+  border: 2px dashed var(--border-icon-green);
+  border-radius: 12px;
+  padding: 40px;
+  background-color: var(--background-tint);
+}
+.upload-area .upload-icon {
+  font-size: 48px;
+  color: var(--border-icon-green);
+  margin-bottom: 16px;
+}
+.upload-area p {
+  color: var(--text-gray);
+  margin-bottom: 24px;
+}
+.upload-area .upload-button {
+  font-size: 16px;
+  font-weight: 600;
+  color: white;
+  background-color: var(--primary-dark-green);
+  padding: 12px 24px;
+  border-radius: 8px;
+  transition: all 0.2s ease-in-out;
+}
+.upload-area .upload-button:hover {
+  opacity: 0.9;
+}
+
+.timetable-display-box img {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  border: 1px solid #eee;
+}
+
+/* --- 이 코드 블록을 MyPage.css 맨 아래에 추가 --- */
+
+/* 프로필 편집 모드 스타일 */
+.edit-actions {
+  display: flex;
+  gap: 8px;
+}
+.edit-actions button {
+  font-size: 14px;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+.save-button {
+  color: var(--primary-dark-green);
+  border: 1px solid var(--primary-dark-green);
+}
+.cancel-button {
+  color: var(--text-gray);
+  border: 1px solid #ccc;
+}
+
+.profile-edit-form .form-row {
+  display: flex;
+  align-items: center;
+  margin: 16px 0;
+}
+.profile-edit-form label {
+  font-weight: 700;
+  width: 80px; /* 라벨 너비 고정 */
+}
+.profile-edit-form input {
+  flex-grow: 1; /* 남은 공간 모두 차지 */
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+  font-family: inherit;
+}
+.profile-edit-form input:focus {
+  outline: none;
+  border-color: var(--primary-dark-green);
+}
+
+/* 시간표 업로드 후 스타일 */
+.timetable-display-box .section-header {
+  margin-bottom: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e0e0e0;
+}
+.timetable-display-box .change-button {
+  cursor: pointer;
+}
