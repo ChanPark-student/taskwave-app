@@ -26,7 +26,8 @@ const LoginPage = () => {
       // 1) 로그인 (토큰 불필요 → auth:false)
       const data = await fetchJSON<TokenPair>(EP.AUTH_LOGIN, {
         method: 'POST',
-        body: { email, password },
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
       });
 
       // 2) 토큰 저장
