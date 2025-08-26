@@ -26,7 +26,8 @@ export type FetchOptions = RequestInit & {
   /** Authorization 헤더 생략이 필요할 때 */
   skipAuth?: boolean;
 };
-
+export async function fetchJSON<T>(path: string, init?: RequestInit): Promise<T>;
+export async function fetchJSON<T>(path: string, init: RequestInit | undefined, autoJson: boolean): Promise<T>;
 export async function fetchJSON<T = unknown>(path: string, opts: FetchOptions = {}): Promise<T> {
   const url = buildUrl(path);
 
@@ -92,3 +93,25 @@ export async function fetchJSON<T = unknown>(path: string, opts: FetchOptions = 
     return undefined as T;
   }
 }
+export async function fetchOK(path: string, init: RequestInit = {}): Promise<void> {
+  const url = buildUrl(path);
+
+  let body: BodyInit | undefined = init.body as any;
+  const isFormData = typeof FormData !== 'undefined' && body instanceof FormData;
+  if (body !== undefined && !isFormData && typeof body !== 'string') {
+    body = JSON.stringify(body);
+  }
+
+  const headers: HeadersInit = {
+    ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
+    ...authHeaders(),
+    ...(init.headers || {}),
+  };
+
+  const res = await fetch(url, { ...init, headers, body });
+  if (!res.ok) {
+    const text = await res.text().catch(() => '');
+    throw new Error(text || `HTTP ${res.status}`);
+  }
+}
+
