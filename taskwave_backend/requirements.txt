@@ -24,4 +24,3 @@ pymupdf>=1.24.10
 numpy>=1.26.0
 pandas>=2.2.2
 
-EOF
