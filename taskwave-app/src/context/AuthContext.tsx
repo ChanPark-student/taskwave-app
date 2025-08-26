@@ -33,13 +33,18 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
+  // FileExplorerPage가 기대하는 모양을 유지
   const [fileSystem] = useState<FileSystemTree>({});
 
   const refreshMe = async () => {
     const token = loadToken();
-    if (!token) { setUser(null); return; }
+    if (!token) {
+      setUser(null);
+      return;
+    }
     try {
-      const me = await fetchJSON<User>(EP.ME, { method: 'GET' }); // Authorization은 fetchJSON 내부에서 처리된다고 가정
+      // Authorization은 fetchJSON 내부에서 자동 첨부된다고 가정
+      const me = await fetchJSON<User>(EP.ME, { method: 'GET' });
       setUser(me);
     } catch {
       clearToken();
@@ -47,16 +52,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  // (선택) 파일 트리 초기화 — 실제 API가 있다면 여기에 붙이면 됨
-  // 예: const tree = await fetchJSON<FileSystemTree>(EP.FILES, { method: 'GET' });
   useEffect(() => {
     void refreshMe();
-
-    // 데모/초기 렌더용 더미 데이터 (원하면 제거 가능)
-    // setFileSystem({
-    //   math: { weeks: { '1주차': [{ name: '2025-03-03' }], '2주차': [{ name: '2025-03-10' }] } },
-    //   physics: { weeks: { '1주차': [{ name: '2025-03-04' }] } },
-    // });
   }, []);
 
   const updateProfile = async (next: Partial<User>) => {
@@ -68,14 +65,20 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       });
       await refreshMe();
     } catch {
-      setUser((prev) => (prev ? { ...prev, ...next } : prev));
+      // 낙관적 업데이트 (실패해도 화면은 반영)
+      setUser(prev => (prev ? { ...prev, ...next } : prev));
     }
   };
 
-  const logout = () => { clearToken(); setUser(null); };
+  const logout = () => {
+    clearToken();
+    setUser(null);
+  };
 
   return (
-    <AuthContext.Provider value={{ user, refreshMe, logout, fileSystem, updateProfile }}>
+    <AuthContext.Provider
+      value={{ user, refreshMe, logout, fileSystem, updateProfile }}
+    >
       {children}
     </AuthContext.Provider>
   );
