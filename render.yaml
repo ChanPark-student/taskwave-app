@@ -3,6 +3,7 @@ services:
     name: taskwave-api
     runtime: docker
     rootDir: taskwave_backend
+    plan: free                  # ← 이것이 핵심!
     healthCheckPath: /api/health
     envVars:
       - key: DATABASE_URL
@@ -29,3 +30,4 @@ services:
 
 databases:
   - name: taskwave-db
+    plan: free                  # ← DB도 반드시 free로!
