@@ -1,47 +1,61 @@
-from __future__ import annotations
-import os
 from logging.config import fileConfig
-from sqlalchemy import engine_from_config, pool
+import os
+import sys
+from pathlib import Path
+
 from alembic import context
+from sqlalchemy import engine_from_config, pool
 
-# Import Base and models so autogenerate can find them
-from app.db.base import Base  # noqa
-from app.models import user, subject, schedule, material, upload  # noqa
+# === Python path 보정: /app (백엔드 루트) 추가 ===
+BASE_DIR = Path(__file__).resolve().parents[1]  # /app
+sys.path.insert(0, str(BASE_DIR))
 
+# Alembic Config 객체
 config = context.config
 
-# Use DATABASE_URL from env when running programmatically
-if 'DATABASE_URL' in os.environ:
-    config.set_main_option('sqlalchemy.url', os.environ['DATABASE_URL'])
-
+# 로깅 설정
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-target_metadata = Base.metadata
+# === psycopg(v3) 드라이버 사용하도록 URL 정규화 ===
+def _normalize_url(url: str) -> str:
+    if url.startswith("postgres://"):
+        return url.replace("postgres://", "postgresql+psycopg://", 1)
+    if url.startswith("postgresql://") and "+psycopg" not in url:
+        return url.replace("postgresql://", "postgresql+psycopg://", 1)
+    return url
 
-def run_migrations_offline():
-    url = config.get_main_option("sqlalchemy.url")
+# 모델 메타데이터
+try:
+    from app.db.base import Base  # noqa
+    target_metadata = Base.metadata
+except Exception:
+    target_metadata = None
+
+def run_migrations_offline() -> None:
+    url = _normalize_url(os.getenv("DATABASE_URL", "sqlite:///./taskwave.db"))
     context.configure(
         url=url,
         target_metadata=target_metadata,
         literal_binds=True,
-        compare_type=True,
+        dialect_opts={"paramstyle": "named"},
     )
     with context.begin_transaction():
         context.run_migrations()
 
-def run_migrations_online():
+def run_migrations_online() -> None:
+    cfg = config.get_section(config.config_ini_section)
+    url_env = os.getenv("DATABASE_URL", "sqlite:///./taskwave.db")
+    cfg["sqlalchemy.url"] = _normalize_url(url_env)
+
     connectable = engine_from_config(
-        config.get_section(config.config_ini_section, {}),
-        prefix='sqlalchemy.',
+        cfg,
+        prefix="sqlalchemy.",
         poolclass=pool.NullPool,
     )
+
     with connectable.connect() as connection:
-        context.configure(
-            connection=connection,
-            target_metadata=target_metadata,
-            compare_type=True,
-        )
+        context.configure(connection=connection, target_metadata=target_metadata)
         with context.begin_transaction():
             context.run_migrations()
 
