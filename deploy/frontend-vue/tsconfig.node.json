@@ -1,0 +1,10 @@
+{
+  "extends": "@tsconfig/node22/tsconfig.json",
+  "compilerOptions": {
+    "composite": true,   // ★ 추가
+    "noEmit": false,     // ★ 있던 noEmit: true 삭제
+    "module": "ESNext",
+    "baseUrl": "."
+  },
+  "include": ["vite.config.ts"]
+}
