@@ -1,4 +1,5 @@
 // src/Header.tsx
+import './index.css';
 
 import { useNavigate } from 'react-router-dom';
 import { FiUser, FiFolder, FiLogOut } from 'react-icons/fi';
