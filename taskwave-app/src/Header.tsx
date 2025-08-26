@@ -1,29 +1,36 @@
+// src/Header.tsx
 import './Header.css';
 
 import { useNavigate } from 'react-router-dom';
-import { FiUser, FiFolder } from 'react-icons/fi';
+import { FiUser, FiFolder, FiLogOut } from 'react-icons/fi';
 import { useAuth } from './context/AuthContext.tsx';
 
 const Header = () => {
   const navigate = useNavigate();
-  // logout 함수는 현재 사용되지 않으므로, user만 가져오도록 수정
-  const { user } = useAuth(); 
+  const { user, logout } = useAuth();
 
   const goToMyPage = () => navigate('/mypage');
   const goToMyFiles = () => navigate('/files');
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
 
   return (
     <header className="app-header">
       <div className="header-content">
         <div className="logo" onClick={() => navigate('/')}>Taskwave</div>
-        
-        {user ? ( 
+
+        {user ? (
           <div className="profile-container">
             <div className="header-icon" onClick={goToMyFiles} title="내 파일">
               <FiFolder />
             </div>
             <div className="header-icon" onClick={goToMyPage} title="마이페이지">
               <FiUser />
+            </div>
+            <div className="header-icon" onClick={handleLogout} title="로그아웃">
+              <FiLogOut />
             </div>
           </div>
         ) : (
