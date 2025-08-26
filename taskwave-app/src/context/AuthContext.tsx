@@ -33,7 +33,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [fileSystem, setFileSystem] = useState<FileSystemTree>({});
+  const [fileSystem] = useState<FileSystemTree>({});
 
   const refreshMe = async () => {
     const token = loadToken();
