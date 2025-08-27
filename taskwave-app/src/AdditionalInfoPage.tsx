@@ -39,7 +39,7 @@ export default function AdditionalInfoPage() {
         EP.ME,
         {
           method: 'PATCH',
-          body: JSON.stringify({ school, dob }),
+          body: JSON.stringify({ school, birth: dob }),
           headers: { ...authHeaders() },
         }
       );

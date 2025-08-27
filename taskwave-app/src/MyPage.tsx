@@ -78,7 +78,7 @@ const MyPage = () => {
               <div className="profile-details">
                 <p><strong>성명</strong><span>{user.name}</span></p>
                 <p><strong>학교</strong><span>{user.school}</span></p>
-                <p><strong>생년월일</strong><span>{user.dob}</span></p>
+                <p><strong>생년월일</strong><span>{user.birth}</span></p>
               </div>
             ) : (
               <div className="profile-edit-form">
@@ -92,8 +92,8 @@ const MyPage = () => {
                   <input type="text" id="school" name="school" value={tempProfile?.school || ''} onChange={handleInputChange} />
                 </div>
                 <div className="form-row">
-                  <label htmlFor="dob">생년월일</label>
-                  <input type="text" id="dob" name="dob" value={tempProfile?.dob || ''} onChange={handleInputChange} />
+                  <label htmlFor="birth">생년월일</label>
+                  <input type="text" id="birth" name="birth" value={tempProfile?.birth || ''} onChange={handleInputChange} />
                 </div>
               </div>
             )}

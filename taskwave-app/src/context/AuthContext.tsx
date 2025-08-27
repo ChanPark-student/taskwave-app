@@ -12,8 +12,6 @@ export type User = {
   email: string;
   name?: string;
   school?: string;
-  // MyPage.tsx에서 참조하는 경우가 있어 선택 필드로 제공
-  dob?: string;
   birth?: string;
 };
 
