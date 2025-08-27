@@ -1,15 +1,12 @@
 // src/main.tsx
+import './index.css'
+import App from './App.tsx'
 
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext.tsx' // 1. AuthProvider 임포트
-import App from './App.tsx'
-import './index.css'
-// src/main.tsx
 
-// 기존 전역
-import './index.css'
 
 // 🔧 핫픽스: 컴포넌트 CSS를 강제로 포함
 import './Header.css'

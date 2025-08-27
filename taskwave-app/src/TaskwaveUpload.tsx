@@ -15,9 +15,8 @@ const TaskwaveUpload = () => {
   useEffect(() => {
     if (selectedFile) {
       const timer = setTimeout(() => {
-        // 자동 초기화 로직을 유지하되, 실제 업로드도 수행
         void uploadNow(selectedFile);
-      }, 300);
+      }, 3000); // 3초 애니메이션과 시간을 맞춥니다.
       return () => clearTimeout(timer);
     }
   }, [selectedFile]);
@@ -34,6 +33,9 @@ const TaskwaveUpload = () => {
       console.log('업로드/파싱 결과:', data);
     } catch (err: any) {
       alert(err?.message ?? '업로드 실패');
+    } finally {
+      // 완료 후 초기화
+      setSelectedFile(null);
     }
   };
 
@@ -59,31 +61,52 @@ const TaskwaveUpload = () => {
     }
   };
 
+  const handleUploadBoxClick = () => {
+    // 파일이 선택된 상태에서는 클릭 이벤트를 무시
+    if (selectedFile) return;
+    document.getElementById('file-upload')?.click();
+  };
+
   return (
-    <div className="page">
+    <div className="page-container">
       <Header />
-      <main className="upload-container">
-        <h1 className="title">시간표 업로드</h1>
+      <main className="main-content">
         <div
-          className={`drop-zone ${isDragging ? 'dragging' : ''}`}
+          className={`upload-box ${isDragging ? 'is-dragging' : ''}`}
           onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
           onDragLeave={() => setIsDragging(false)}
           onDrop={handleDrop}
+          onClick={handleUploadBoxClick}
+          style={{ cursor: selectedFile ? 'default' : 'pointer' }}
         >
-          <FiUploadCloud className="upload-icon" />
-          <p>여기에 파일을 드래그하거나, 클릭해서 선택하세요.</p>
-          <input type="file" accept=".png,.jpg,.jpeg,.webp,.pdf" onChange={handleFileChange} />
-        </div>
-
-        {selectedFile && (
-          <div className="file-info">
-            <p className="file-name">✅ {selectedFile.name}</p>
-            <p className="file-ready-text">파일 업로드 및 분석을 진행합니다…</p>
-            <div className="timer-bar-container">
-              <div className="timer-bar"></div>
+          {selectedFile ? (
+            <div className="file-info">
+              <p className="file-name">✅ {selectedFile.name}</p>
+              <p className="file-ready-text">파일 업로드 및 분석을 진행합니다…</p>
+              <div className="timer-bar-container">
+                <div className="timer-bar"></div>
+              </div>
             </div>
-          </div>
-        )}
+          ) : (
+            <>
+              <h1 className="upload-title">시간표 업로드</h1>
+              <FiUploadCloud className="upload-icon" />
+              <p className="upload-prompt">여기에 시간표 PDF 또는 이미지 파일을 놓으세요.</p>
+              <p className="or-divider">또는</p>
+              <div className="upload-button">
+                파일 선택
+              </div>
+              <input
+                id="file-upload"
+                type="file"
+                accept=".png,.jpg,.jpeg,.webp,.pdf"
+                onChange={handleFileChange}
+                style={{ display: 'none' }}
+                onClick={(e) => e.stopPropagation()}
+              />
+            </>
+          )}
+        </div>
 
         {result && (
           <div className="result-block">
