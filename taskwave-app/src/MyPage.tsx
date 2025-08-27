@@ -1,10 +1,12 @@
 import { useState, useEffect, ChangeEvent } from 'react'; // ChangeEvent 타입 임포트
+import { useNavigate } from 'react-router-dom';
 import { FiUploadCloud } from 'react-icons/fi';
 import Header from './Header.tsx';
 import { useAuth } from './context/AuthContext.tsx';
 import './MyPage.css';
 
 const MyPage = () => {
+  const navigate = useNavigate();
   const { user, updateProfile } = useAuth();
 
   // timetableImage의 타입을 string 또는 null로 지정

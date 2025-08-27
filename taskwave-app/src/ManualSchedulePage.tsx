@@ -40,7 +40,7 @@ const ManualSchedulePage = () => {
     try {
       await fetchJSON(EP.SCHEDULES_MANUAL, {
         method: 'POST',
-        body: { slots },
+        body: JSON.stringify({ slots }),
       });
       alert('시간표가 성공적으로 저장되었습니다!');
       navigate('/files');
@@ -57,7 +57,7 @@ const ManualSchedulePage = () => {
       <main className="manual-schedule-main-content">
         <h1 className="manual-schedule-title">시간표 수동 입력</h1>
         <div className="schedule-form-container">
-          {slots.map((slot, index) => (
+          {slots.map((slot) => (
             <div key={slot.id} className="slot-row">
               <input
                 type="text"

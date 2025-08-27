@@ -14,6 +14,7 @@ export const EP = {
   MATERIAL: (mid: number|string) => `/api/materials/${mid}`,
 
   TIMETABLE_UPLOAD: '/api/timetable/upload',
+  SCHEDULES_MANUAL: '/api/schedules/manual',
 
   SCHEDULES_PING: '/api/schedules/ping',
   HEALTH: '/api/health',
