@@ -23,7 +23,6 @@ def create_manual_schedule(
     today = date.today()
     
     subject_cache = {}
-    week_cache = {}
 
     for slot in payload.slots:
         subject_title = slot.subject_title
@@ -56,32 +55,25 @@ def create_manual_schedule(
         for week_num in range(1, SEMESTER_WEEKS + 1):
             current_date = first_date + timedelta(weeks=week_num - 1)
 
-            week_key = (subject.id, week_num)
-            if week_key in week_cache:
-                week = week_cache[week_key]
-            else:
-                week = db.query(Week).filter(
-                    Week.subject_id == subject.id,
-                    Week.week_no == week_num
-                ).first()
-                if not week:
-                    week = Week(
-                        id=str(uuid4()),
-                        subject_id=subject.id,
-                        week_no=week_num,
-                        month=current_date.month
-                    )
-                    db.add(week)
-                week_cache[week_key] = week
+            week = next((w for w in subject.weeks if w.week_no == week_num), None)
+
+            if not week:
+                week = Week(
+                    id=str(uuid4()),
+                    week_no=week_num,
+                    month=current_date.month
+                )
+                subject.weeks.append(week)
+                db.add(week)
 
             session = SessionModel(
                 id=str(uuid4()),
-                week_id=week.id,
                 date=current_date,
                 title=f"{subject_title} 강의",
                 start_time=slot.start_time,
                 end_time=slot.end_time
             )
+            week.sessions.append(session)
             db.add(session)
 
     db.commit()
