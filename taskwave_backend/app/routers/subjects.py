@@ -65,7 +65,7 @@ def create_session(week_id: str, payload: SessionCreate, db: Session = Depends(g
     subj = db.get(Subject, week.subject_id)
     if subj.user_id != current.id:
         raise HTTPException(status_code=403, detail="Forbidden")
-    sess = SessionModel(id=str(uuid4()), week_id=week_id, date=payload.date, title=payload.title)
+    sess = SessionModel(id=str(uuid4()), week_id=week_id, date=payload.date, title=payload.title, start_time=payload.start_time, end_time=payload.end_time)
     db.add(sess)
     db.commit()
     db.refresh(sess)

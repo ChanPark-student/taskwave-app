@@ -105,9 +105,10 @@ const MyPage = () => {
                 <h2>시간표 업로드</h2>
                 <div className="upload-area">
                   <FiUploadCloud className="upload-icon" />
-                  <p>여기에 시간표 PDF 또는 이미지 파일 놓기</p>
-                  <label htmlFor="timetable-upload" className="upload-button">업로드하여 편집</label>
+                  <p>시간표 파일을 업로드하면 자동으로 분석해 드립니다.</p>
+                  <label htmlFor="timetable-upload" className="upload-button">시간표 파일 업로드</label>
                   <input id="timetable-upload" type="file" accept="image/*,.pdf" onChange={handleImageUpload} style={{ display: 'none' }} />
+                  <button onClick={() => navigate('/add-schedule')} className="manual-add-button">수동으로 시간표 입력</button>
                 </div>
               </div>
             ) : (

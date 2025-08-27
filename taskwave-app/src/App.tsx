@@ -4,7 +4,8 @@ import SignupPage from './SignupPage.js'
 import LoginPage from './LoginPage.js'
 import MyPage from './MyPage.js'
 import FileExplorerPage from './FileExplorerPage.js'
-import AdditionalInfoPage from './AdditionalInfoPage.js'; // 1. 새 페이지 임포트
+import AdditionalInfoPage from './AdditionalInfoPage.js';
+import ManualSchedulePage from './ManualSchedulePage';
 
 function App() {
   return (
@@ -21,6 +22,9 @@ function App() {
 
       {/* 2. 추가 정보 페이지 경로 추가 */}
       <Route path="/signup-info" element={<AdditionalInfoPage />} />
+
+      {/* 3. 시간표 수동 입력 페이지 경로 추가 */}
+      <Route path="/add-schedule" element={<ManualSchedulePage />} />
     </Routes>
   )
 }

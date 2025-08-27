@@ -103,6 +103,23 @@
   opacity: 0.9;
 }
 
+.manual-add-button {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-gray);
+  background-color: transparent;
+  border: 1px solid var(--border-gray);
+  padding: 10px 20px;
+  border-radius: 8px;
+  margin-top: 16px;
+  transition: all 0.2s ease-in-out;
+}
+
+.manual-add-button:hover {
+  background-color: #f5f5f5;
+  border-color: #ccc;
+}
+
 .timetable-display-box img {
   width: 100%;
   height: auto;

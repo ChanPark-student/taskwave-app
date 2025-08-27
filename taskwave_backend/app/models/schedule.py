@@ -18,5 +18,7 @@ class Session(Base):
     week_id: Mapped[str] = mapped_column(ForeignKey("weeks.id"), index=True, nullable=False)
     date: Mapped[Date] = mapped_column(Date, nullable=False)
     title: Mapped[str | None] = mapped_column(String, nullable=True)
+    start_time: Mapped[str] = mapped_column(String, nullable=False)
+    end_time: Mapped[str] = mapped_column(String, nullable=False)
 
     week = relationship("Week", back_populates="sessions")
