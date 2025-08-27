@@ -21,21 +21,28 @@ def create_manual_schedule(
 ):
     SEMESTER_WEEKS = 16
     today = date.today()
+    
+    subject_cache = {}
+    week_cache = {}
 
     for slot in payload.slots:
-        subject = db.query(Subject).filter(
-            Subject.user_id == current.id,
-            Subject.title == slot.subject_title
-        ).first()
-        if not subject:
-            subject = Subject(
-                id=str(uuid4()),
-                user_id=current.id,
-                title=slot.subject_title
-            )
-            db.add(subject)
-            db.commit()
-            db.refresh(subject)
+        subject_title = slot.subject_title
+        
+        if subject_title in subject_cache:
+            subject = subject_cache[subject_title]
+        else:
+            subject = db.query(Subject).filter(
+                Subject.user_id == current.id,
+                Subject.title == subject_title
+            ).first()
+            if not subject:
+                subject = Subject(
+                    id=str(uuid4()),
+                    user_id=current.id,
+                    title=subject_title
+                )
+                db.add(subject)
+            subject_cache[subject_title] = subject
 
         target_weekday = WEEKDAY_MAP.get(slot.weekday)
         if target_weekday is None:
@@ -49,26 +56,29 @@ def create_manual_schedule(
         for week_num in range(1, SEMESTER_WEEKS + 1):
             current_date = first_date + timedelta(weeks=week_num - 1)
 
-            week = db.query(Week).filter(
-                Week.subject_id == subject.id,
-                Week.week_no == week_num
-            ).first()
-            if not week:
-                week = Week(
-                    id=str(uuid4()),
-                    subject_id=subject.id,
-                    week_no=week_num,
-                    month=current_date.month
-                )
-                db.add(week)
-                db.commit()
-                db.refresh(week)
+            week_key = (subject.id, week_num)
+            if week_key in week_cache:
+                week = week_cache[week_key]
+            else:
+                week = db.query(Week).filter(
+                    Week.subject_id == subject.id,
+                    Week.week_no == week_num
+                ).first()
+                if not week:
+                    week = Week(
+                        id=str(uuid4()),
+                        subject_id=subject.id,
+                        week_no=week_num,
+                        month=current_date.month
+                    )
+                    db.add(week)
+                week_cache[week_key] = week
 
             session = SessionModel(
                 id=str(uuid4()),
                 week_id=week.id,
                 date=current_date,
-                title=f"{slot.subject_title} 강의",
+                title=f"{subject_title} 강의",
                 start_time=slot.start_time,
                 end_time=slot.end_time
             )

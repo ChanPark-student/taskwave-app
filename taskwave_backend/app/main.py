@@ -62,7 +62,11 @@ if not origins and os.getenv("FRONTEND_URL"):
 
 # 기본값(개발 환경)
 if not origins:
-    origins = ["http://localhost:5173"]
+    origins = ["http://localhost:5173", "https://taskwave-app.onrender.com"]
+
+# Add the deployed frontend URL for convenience
+if "https://taskwave-app.onrender.com" not in origins:
+    origins.append("https://taskwave-app.onrender.com")
 
 logging.getLogger("uvicorn.error").info("CORS allow_origins=%s", origins)
 
