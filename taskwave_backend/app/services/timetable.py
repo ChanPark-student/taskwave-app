@@ -61,7 +61,11 @@ TIME_RE = re.compile(r"(오\s*전|오\s*후)?\s*([0-9]{1,2})\s*시")
 TIME_RE_CONTAINS = re.compile(r"(?:오\s*전|오\s*후)?\s*[0-9]{1,2}\s*시")
 
 # ── 이름/강의실 ─────────────────────────────────────────────
-NAME_RE = re.compile(r'^[가-힣]{2,4}$')
+NAME_RE = re.compile(r'''
+    ^            # 시작
+    [가-힣]{2,4} # 한글 2~4자
+    $            # 끝
+''', re.X) 
 
 
 ROOM_RE = re.compile(
@@ -71,10 +75,9 @@ ROOM_RE = re.compile(
     flags=re.IGNORECASE
 )
 HANGUL_RUN_RE = re.compile(r'(?:(?<=^)|(?<=\s))((?:[가-힣]\s+)+[가-힣])(?=(?:\s|$))')
-HANGUL_CH_RE = re.compile(r'^[가-힣]
-
-)
-
+HANGUL_CH_RE = re.compile(r'''
+    ^[가-힣]+$   # 한글만 1자 이상
+''', re.X)
 # ---- Tesseract 경로 주입 ----
 _candidates = [
     settings.TESSERACT_CMD,
@@ -148,15 +151,17 @@ def _vocab_correct(s: str, vocab: set[str]) -> Optional[str]:
     return best if best_r >= VOCAB_SIM_THRESHOLD else None
 
 
+import re
+
 def _normalize_line(s: str) -> str:
     s = " ".join(s.split())
     s = HANGUL_RUN_RE.sub(lambda m: m.group(0).replace(' ', ''), s)
     s = re.sub(r'(\d)\s*[-–]\s*(\d)', r'\1-\2', s)
-    s = re.sub(r'^["\“\”\\'\'\`]+|["\“\”\\'\'\`]+
-
-, '', s)
+    # 앞/뒤의 따옴표류 제거: ", “, ”, ', `
+    s = re.sub(r"^[\"“”'`]+|[\"“”'`]+$", "", s)
     s = re.sub(r'\b(?:5|S)\s*/\s*', 'SW', s)  # '산업공학 5/ 활용' → '산업공학SW활용'
     return s
+
 
 
 def _add_hours_str(t: Optional[str], dh: int) -> Optional[str]:
@@ -694,14 +699,14 @@ def _split_prof_loc(line: str) -> tuple[Optional[str], Optional[str]]:
 
     if loc is None:
         m = ROOM_RE.search(s)
-        if m:
-            loc = m.group(0).replace(' ', '')
-            head = s[:m.start()].strip()
-            mn = re.search(r'([가-힣]{2,4})\s*
+    if m:
+        loc = m.group(0).replace(' ', '')
+        head = s[:m.start()].strip()
+        # head의 끝에서 한글 이름(2~4자) 캡처
+        mn = re.search(r'([가-힣]{2,4})\s*$', head)
+        if mn and _looks_korean_name(mn.group(1)):
+            prof = prof or mn.group(1)
 
-, head)
-            if mn and _looks_korean_name(mn.group(1)):
-                prof = prof or mn.group(1)
 
     if prof is None and not any(ch.isdigit() for ch in s):
         mn = re.match(r'^([가-힣]{2,4})\b', s)
