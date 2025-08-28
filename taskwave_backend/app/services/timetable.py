@@ -19,9 +19,9 @@ from app.core.config import settings
 
 logger = logging.getLogger(__name__)
 
-# ============================================================
+# ============================================================ 
 # 런타임 설정(가독성과 안정성 위해 상수화)
-# ============================================================
+# ============================================================ 
 ENABLE_NEIGHBOR_FILTER: bool = False     # 사용 안함(불안정 소지)
 FILL_THR: float = 0.006                  # 칸 배경 채움 임계(파스텔 대응)
 VOCAB_SIM_THRESHOLD: float = 0.62        # 과목 어휘 사전 유사도 임계
@@ -53,7 +53,7 @@ H_CLOSE_K = 9                # 수평 Close 커널 가로
 H_CLOSE_ITERS = 1
 OPEN_K = 3                   # Open 커널 크기(작은 노이즈 제거)
 
-ALLOWED_IMAGE_SUFFIX = {".png", ".jpg", ".jpeg", ".webp"}
+ALLOWED_IMAGE_SUFFIX = {'.png', '.jpg', '.jpeg', '.webp'}
 KOR_WEEKDAYS = ["월", "화", "수", "목", "금", "토", "일"]
 
 # ── 시간 라벨 ────────────────────────────────────────────────
@@ -61,21 +61,25 @@ TIME_RE = re.compile(r"(오\s*전|오\s*후)?\s*([0-9]{1,2})\s*시")
 TIME_RE_CONTAINS = re.compile(r"(?:오\s*전|오\s*후)?\s*[0-9]{1,2}\s*시")
 
 # ── 이름/강의실 ─────────────────────────────────────────────
-NAME_RE = re.compile(r'^[가-힣]{2,4}$')
+NAME_RE = re.compile(r'^[가-힣]{2,4}
+
+)
 ROOM_RE = re.compile(
     r"(?:[가-힣A-Za-z]{1,4}\s?\d{1,3}[A-Za-z]?\s*[-–]?\s?\d{2,4}\b)"
-    r"|(?:\b\d{2,3}\s*[-–]\s*\d{2,4}\b)"
-    r"|(?:\b[A-Za-z]{1,3}\d{2,4}\b)",
+    r"|(?:\d{2,3}\s*[-–]\s*\d{2,4}\b)"
+    r"|(?:[A-Za-z]{1,3}\d{2,4}\b)",
     flags=re.IGNORECASE
 )
 HANGUL_RUN_RE = re.compile(r'(?:(?<=^)|(?<=\s))((?:[가-힣]\s+)+[가-힣])(?=(?:\s|$))')
-HANGUL_CH_RE = re.compile(r'^[가-힣]$')
+HANGUL_CH_RE = re.compile(r'^[가-힣]
+
+)
 
 # ---- Tesseract 경로 주입 ----
 _candidates = [
     settings.TESSERACT_CMD,
-    r"C:\Program Files\Tesseract-OCR\tesseract.exe",
-    r"C:\Program Files (x86)\Tesseract-OCR\tesseract.exe",
+    r"C:\\Program Files\\Tesseract-OCR\\tesseract.exe",
+    r"C:\\Program Files (x86)\\Tesseract-OCR\\tesseract.exe",
 ]
 tess_path = next((p for p in _candidates if p and os.path.isfile(p)), None)
 if not tess_path:
@@ -148,7 +152,9 @@ def _normalize_line(s: str) -> str:
     s = " ".join(s.split())
     s = HANGUL_RUN_RE.sub(lambda m: m.group(0).replace(' ', ''), s)
     s = re.sub(r'(\d)\s*[-–]\s*(\d)', r'\1-\2', s)
-    s = re.sub(r'^[\"“”\'`]+|[\"“”\'`]+$', '', s)
+    s = re.sub(r'^["\“\”\\'\'\`]+|["\“\”\\'\'\`]+
+
+, '', s)
     s = re.sub(r'\b(?:5|S)\s*/\s*', 'SW', s)  # '산업공학 5/ 활용' → '산업공학SW활용'
     return s
 
@@ -168,12 +174,10 @@ def _ocr_string(img, psm: int, lang="kor+eng") -> str:
     cfg = f"--psm {psm} --oem 1 -c preserve_interword_spaces=1"
     return pytesseract.image_to_string(img, lang=lang, config=cfg)
 
-
 def _binarize(rgb: np.ndarray) -> np.ndarray:
     gray = cv2.cvtColor(rgb, cv2.COLOR_RGB2GRAY)
     thr = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY_INV | cv2.THRESH_OTSU)[1]
     return thr
-
 
 def _build_edges_from_centers(centers: List[int], whole: int) -> List[int]:
     centers = [int(c) for c in list(centers or []) if c is not None and not (isinstance(c, float) and np.isnan(c))]
@@ -189,7 +193,6 @@ def _build_edges_from_centers(centers: List[int], whole: int) -> List[int]:
     edges.append(whole)
     edges = sorted(set(int(e) for e in edges if e is not None))
     return edges
-
 
 def _group_positions(pos: np.ndarray, gap: int) -> List[int]:
     if pos is None or len(pos) == 0:
@@ -207,7 +210,6 @@ def _group_positions(pos: np.ndarray, gap: int) -> List[int]:
             cur = [p]
     groups.append(int(np.median(cur)))
     return groups
-
 
 def _detect_grid_lines(binary: np.ndarray) -> Tuple[List[int], List[int]]:
     """
@@ -321,7 +323,6 @@ def _infer_columns_from_words(df, W: int, H: int, header_h: int, time_w_guess: i
         if edges[-1] != W: edges = edges + [W]
     return edges, time_w
 
-
 def _infer_rows_from_words(df, H: int, header_h: int, footer_h: int = 0) -> List[int]:
     if df is None or len(df) == 0:
         return [0, int(H*0.12), H]
@@ -356,7 +357,6 @@ def _infer_rows_from_words(df, H: int, header_h: int, footer_h: int = 0) -> List
     if y_edges[1] - header_h > max(24, int(H*0.06)):
         y_edges[1] = header_h + max(12, int(H*0.03))
     return y_edges
-
 
 def _row_times_from_left_ocr(df, H: int, time_w: int) -> Tuple[List[str], List[int], List[int]]:
     left = df[df.left < time_w].copy()
@@ -505,7 +505,6 @@ def _infer_columns_from_header_days(df, W: int, header_h: int, time_w_guess: int
         x_edges[1] = max(int(W * 0.10), min(int(W * 0.35), x_edges[2] - 10))
 
     return x_edges, x_edges[1], centers
-
 
 def _resolve_columns(df, rgb, W, H, header_h, x_lines, time_w_guess, debug_lines) -> Tuple[List[int], List[str], int]:
     def _uniform5_from(x_edges_now: List[int]) -> List[int]:
@@ -672,7 +671,7 @@ def _reconstruct_lines_by_yx(words: List[dict]) -> List[str]:
         lines.append(sorted(cur, key=lambda x: x["left"]))
     out = []
     for ln in lines:
-        s = " ".join(w["text"] for w in ln if w["text"]).strip()
+        s = " ".join(w["text"] for w in ln if w["text"])
         if s:
             out.append(s)
     return out
@@ -685,7 +684,7 @@ def _looks_korean_name(s: str) -> bool:
 
 def _split_prof_loc(line: str) -> tuple[Optional[str], Optional[str]]:
     prof, loc = None, None
-    s = re.sub(r'^\[V\]', '', line.strip())
+    s = re.sub(r'^\ \[V\]', '', line.strip())
     m_join = re.search(r'([가-힣]{2,4})\s*((?:공|[A-Za-z])\s?\d{1,3}[A-Za-z]?\s*[-–]?\s?\d{2,4})', s)
     if m_join:
         cand_prof = m_join.group(1)
@@ -698,7 +697,9 @@ def _split_prof_loc(line: str) -> tuple[Optional[str], Optional[str]]:
         if m:
             loc = m.group(0).replace(' ', '')
             head = s[:m.start()].strip()
-            mn = re.search(r'([가-힣]{2,4})\s*$', head)
+            mn = re.search(r'([가-힣]{2,4})\s*
+
+, head)
             if mn and _looks_korean_name(mn.group(1)):
                 prof = prof or mn.group(1)
 
@@ -747,7 +748,6 @@ def _score_title(s: str, freq: int, idx: int, prof_hint: Optional[str]) -> float
         + prof_pen
     )
 
-
 def _choose_fields_from_lines(lines: List[str], line_freq: Counter) -> Tuple[str, Optional[str], Optional[str], str]:
     if not lines:
         return "", None, None, ""
@@ -755,7 +755,7 @@ def _choose_fields_from_lines(lines: List[str], line_freq: Counter) -> Tuple[str
     parsed = []
     for raw in lines[:8]:
         is_v = raw.startswith("[V]")
-        clean = re.sub(r'^\[V\]', '', raw)
+        clean = re.sub(r'^\ \[V\]', '', raw)
         parsed.append((raw, clean, is_v))
 
     loc_cands  = []
@@ -865,7 +865,6 @@ def _choose_fields_from_lines(lines: List[str], line_freq: Counter) -> Tuple[str
         best_prof = None
 
     return best_title, best_prof, best_loc, "\n".join(s for (_raw, s, _is_v) in parsed)
-
 
 def _merge_contiguous_slots(slots: List[ParsedSlot]) -> List[ParsedSlot]:
     key = lambda s: (s.weekday, s.title.strip(), s.professor or "", s.location or "")
@@ -1195,8 +1194,10 @@ def _parse_slots_from_image(binary_img: np.ndarray, rgb_img: np.ndarray) -> tupl
                 if len(roi_df) > 0:
                     words = [{
                         "text": str(r["text"]).strip(),
-                        "left": int(r["left"]), "top": int(r["top"]),
-                        "width": int(r["width"]), "height": int(r["height"])
+                        "left": int(r["left"]),
+                        "top": int(r["top"]),
+                        "width": int(r["width"]),
+                        "height": int(r["height"])
                     } for _, r in roi_df.iterrows() if str(r["text"]).strip()]
                     rec = _reconstruct_lines_by_yx(words)
                     ver = _fuse_vertical_hangul(words)
@@ -1211,9 +1212,9 @@ def _parse_slots_from_image(binary_img: np.ndarray, rgb_img: np.ndarray) -> tupl
                     if norm:
                         lines = norm
 
-            line_freq = Counter(re.sub(r'^\[V\]', '', z) for z in lines)
+            line_freq = Counter(re.sub(r'^\ \[V\]', '', z) for z in lines)
             title, prof, loc, raw = _choose_fields_from_lines(lines, line_freq)
-            raw = "\n".join(re.sub(r'^\[V\]', '', t) for t in lines)
+            raw = "\n".join(re.sub(r'^\ \[V\]', '', t) for t in lines)
             return title or "", prof, loc, raw or ""
         except Exception as e:
             logger.exception("collect_from_roi failed: %s", e)
@@ -1373,11 +1374,62 @@ def parse_timetable_from_file(file_path: str | Path) -> tuple[List[ParsedSlot], 
 
     return all_slots, "\n---\n".join(all_raw)
 
-
 def parse_timetable_from_pdf(pdf_path: str | Path) -> tuple[List[ParsedSlot], str]:
     return parse_timetable_from_file(pdf_path)
 
-
 def parse_timetable_from_image(img_path: str | Path) -> tuple[List[ParsedSlot], str]:
     return parse_timetable_from_file(img_path)
+
+
+def create_schedule_files(slots: List[ParsedSlot], base_path: str | Path = "schedule_output"):
+    """
+    파싱된 시간표 슬롯 리스트를 바탕으로 과목별 폴더와 강의별 메모장 파일을 생성합니다.
+
+    :param slots: parse_timetable_from_file()로부터 반환된 ParsedSlot 객체의 리스트
+    :param base_path: 모든 과목 폴더가 생성될 최상위 경로
+    """
+    base_dir = Path(base_path)
+    base_dir.mkdir(exist_ok=True)
+    
+    # 파일 이름으로 사용하기 부적절한 문자 제거를 위한 정규식
+    invalid_chars = re.compile(r'[\\/:*?"<>|]')
+    
+    created_files = []
+
+    for slot in slots:
+        # 1. 과목명으로 폴더 경로 생성
+        subject_title = slot.title.strip() if slot.title else "기타"
+        sanitized_folder_name = invalid_chars.sub("", subject_title)
+        if not sanitized_folder_name:
+            sanitized_folder_name = "기타"
+        
+        subject_dir = base_dir / sanitized_folder_name
+        subject_dir.mkdir(exist_ok=True)
+        
+        # 2. 파일명 생성 (예: 09_00-10_30_월.txt)
+        start_str = slot.start_time.replace(":", "_")
+        end_str = slot.end_time.replace(":", "_") if slot.end_time else ""
+        filename = f"{start_str}-{end_str}_{slot.weekday}.txt"
+        
+        file_path = subject_dir / filename
+        
+        # 3. 파일 내용 작성
+        content = []
+        content.append(f"과목: {slot.title or 'N/A'}")
+        content.append(f"시간: {slot.start_time} ~ {slot.end_time or 'N/A'}")
+        content.append(f"요일: {slot.weekday or 'N/A'}")
+        content.append(f"교수: {slot.professor or 'N/A'}")
+        content.append(f"강의실: {slot.location or 'N/A'}")
+        content.append("\n---\n")
+        content.append(f"[원본 OCR 텍스트]\n{slot.raw_text or ''}")
+        
+        # 4. 파일 쓰기
+        try:
+            file_path.write_text("\n".join(content), encoding="utf-8")
+            created_files.append(str(file_path))
+        except Exception as e:
+            logger.error(f"Failed to write file {file_path}: {e}")
+
+    logger.info(f"{len(created_files)}개의 파일을 성공적으로 생성했습니다. 경로: {base_dir.resolve()}")
+    return created_files
 
