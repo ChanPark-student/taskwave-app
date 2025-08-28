@@ -61,9 +61,9 @@ TIME_RE = re.compile(r"(오\s*전|오\s*후)?\s*([0-9]{1,2})\s*시")
 TIME_RE_CONTAINS = re.compile(r"(?:오\s*전|오\s*후)?\s*[0-9]{1,2}\s*시")
 
 # ── 이름/강의실 ─────────────────────────────────────────────
-NAME_RE = re.compile(r'^[가-힣]{2,4}
+NAME_RE = re.compile(r'^[가-힣]{2,4}$')
 
-)
+
 ROOM_RE = re.compile(
     r"(?:[가-힣A-Za-z]{1,4}\s?\d{1,3}[A-Za-z]?\s*[-–]?\s?\d{2,4}\b)"
     r"|(?:\d{2,3}\s*[-–]\s*\d{2,4}\b)"
