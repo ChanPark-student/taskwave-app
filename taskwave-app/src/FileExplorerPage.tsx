@@ -45,9 +45,8 @@ const FileExplorerPage = () => {
       await fetchJSON(EP.MATERIALS_UPLOAD, {
         method: 'POST',
         body: formData,
-        // fetchJSON은 자동으로 토큰을 추가하지만, FormData는 Content-Type을 설정하지 않아야 브라우저가 올바르게 처리합니다.
       });
-      await refreshMe(); // 파일 목록을 다시 불러오기 위해 전체 데이터 새로고침
+      await refreshMe();
     } catch (err) {
       console.error("File upload failed:", err);
       setUploadError('파일 업로드에 실패했습니다.');
@@ -57,8 +56,9 @@ const FileExplorerPage = () => {
   };
 
   const renderContent = () => {
-    // 2단계: 날짜 폴더 내부 (파일 목록)
+    // 렌더링 로직을 명확한 if/else if/else 구조로 변경
     if (subject && date) {
+      // 2단계: 날짜 폴더 내부 (파일 목록)
       const dateInfo = fileSystem[subject]?.dates?.[date];
       const files = dateInfo?.files || [];
 
@@ -72,7 +72,7 @@ const FileExplorerPage = () => {
             <input type="file" ref={fileInputRef} onChange={handleFileSelected} style={{ display: 'none' }} />
           </div>
           {uploadError && <div className="upload-error">{uploadError}</div>}
-          {files.length === 0 ? (
+          {files.length === 0 && !isUploading ? (
             <div className="empty-folder-message">업로드된 파일이 없습니다.</div>
           ) : (
             files.map(file => (
@@ -84,10 +84,8 @@ const FileExplorerPage = () => {
           )}
         </>
       );
-    }
-    
-    // 1단계: 과목 폴더 내부 (날짜 폴더 목록)
-    if (subject) {
+    } else if (subject) {
+      // 1단계: 과목 폴더 내부 (날짜 폴더 목록)
       const dates = fileSystem[subject]?.dates || {};
       const dateKeys = Object.keys(dates);
       if (dateKeys.length === 0) return <div className="empty-folder-message">생성된 날짜 폴더가 없습니다.</div>;
@@ -98,15 +96,15 @@ const FileExplorerPage = () => {
           <span>{dateKey}</span>
         </Link>
       ));
+    } else {
+      // 최상위: 모든 과목 폴더
+      return Object.keys(fileSystem).map(subjectName => (
+        <Link to={`/files/${subjectName}`} key={subjectName} className="folder-item">
+          <FiFolder />
+          <span>{subjectName}</span>
+        </Link>
+      ));
     }
-
-    // 최상위: 모든 과목 폴더
-    return Object.keys(fileSystem).map(subjectName => (
-      <Link to={`/files/${subjectName}`} key={subjectName} className="folder-item">
-        <FiFolder />
-        <span>{subjectName}</span>
-      </Link>
-    ));
   };
 
   const Breadcrumbs = () => (
