@@ -20,6 +20,7 @@ export const EP = {
   MATERIAL: (mid: number|string) => `/api/materials/${mid}`,
 
   TIMETABLE_UPLOAD: '/api/timetable/upload',
+  UPLOADS_AUTO_SORT: '/api/uploads/auto-sort', // 자동 분류 업로드
   SCHEDULES_MANUAL: '/api/schedules/manual',
 
   SCHEDULES_PING: '/api/schedules/ping',

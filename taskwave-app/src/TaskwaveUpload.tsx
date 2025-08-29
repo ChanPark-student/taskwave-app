@@ -1,51 +1,54 @@
 // src/TaskwaveUpload.tsx
 import './TaskwaveUpload.css';
 import { useState, useEffect, ChangeEvent, DragEvent } from 'react';
-import { FiUploadCloud } from 'react-icons/fi';
+import { FiUploadCloud, FiCheckCircle, FiAlertCircle } from 'react-icons/fi';
 import Header from './Header';
-
+import { useAuth } from './context/AuthContext';
 import { EP } from './lib/endpoints';
-import { fetchJSON, authHeaders } from './lib/http';
+import { fetchJSON } from './lib/http';
 
 const TaskwaveUpload = () => {
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const { refreshMe } = useAuth(); // 파일 목록 새로고침을 위해 AuthContext 사용
+  const [isUploading, setIsUploading] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
-  const [result, setResult] = useState<any>(null);
+  const [uploadStatus, setUploadStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [fileName, setFileName] = useState('');
 
-  useEffect(() => {
-    if (selectedFile) {
-      const timer = setTimeout(() => {
-        void uploadNow(selectedFile);
-      }, 3000); // 3초 애니메이션과 시간을 맞춥니다.
-      return () => clearTimeout(timer);
-    }
-  }, [selectedFile]);
+  const handleAutoSortUpload = async (file: File) => {
+    if (!file) return;
 
-  const uploadNow = async (file: File) => {
+    setIsUploading(true);
+    setUploadStatus('idle');
+    setFileName(file.name);
+
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('last_modified', String(file.lastModified));
+
     try {
-      const fd = new FormData();
-      fd.append('file', file);
-      const data = await fetchJSON<any>(
-        EP.TIMETABLE_UPLOAD,
-        { method: 'POST', body: fd, headers: { ...authHeaders() } }
-      );
-      setResult(data);
-      console.log('업로드/파싱 결과:', data);
+      await fetchJSON(EP.UPLOADS_AUTO_SORT, {
+        method: 'POST',
+        body: formData,
+      });
+      setUploadStatus('success');
+      await refreshMe(); // 성공 시 파일 탐색기 데이터 새로고침
     } catch (err: any) {
-      alert(err?.message ?? '업로드 실패');
+      console.error('Auto-sort upload failed:', err);
+      setUploadStatus('error');
     } finally {
-      // 완료 후 초기화
-      setSelectedFile(null);
+      setIsUploading(false);
+      // 3초 후 상태 초기화
+      setTimeout(() => {
+        setUploadStatus('idle');
+        setFileName('');
+      }, 3000);
     }
   };
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file) return;
-    if (file.type === 'application/pdf' || file.type.startsWith('image/')) {
-      setSelectedFile(file);
-    } else {
-      alert('PDF 또는 이미지 파일만 업로드할 수 있습니다.');
+    if (file) {
+      void handleAutoSortUpload(file);
     }
   };
 
@@ -53,18 +56,60 @@ const TaskwaveUpload = () => {
     e.preventDefault();
     setIsDragging(false);
     const file = e.dataTransfer.files?.[0];
-    if (!file) return;
-    if (file.type === 'application/pdf' || file.type.startsWith('image/')) {
-      setSelectedFile(file);
-    } else {
-      alert('PDF 또는 이미지 파일만 업로드할 수 있습니다.');
+    if (file) {
+      void handleAutoSortUpload(file);
     }
   };
 
-  const handleUploadBoxClick = () => {
-    // 파일이 선택된 상태에서는 클릭 이벤트를 무시
-    if (selectedFile) return;
-    document.getElementById('file-upload')?.click();
+  const renderUploadState = () => {
+    if (isUploading) {
+      return (
+        <div className="file-info">
+          <p className="file-name">{fileName}</p>
+          <p className="file-ready-text">파일 업로드 및 자동 분류 중...</p>
+          <div className="timer-bar-container">
+            <div className="timer-bar"></div>
+          </div>
+        </div>
+      );
+    }
+
+    if (uploadStatus === 'success') {
+      return (
+        <div className="file-info success">
+          <FiCheckCircle />
+          <p>성공적으로 업로드 및 분류되었습니다!</p>
+        </div>
+      );
+    }
+
+    if (uploadStatus === 'error') {
+      return (
+        <div className="file-info error">
+          <FiAlertCircle />
+          <p>업로드에 실패했습니다. 다시 시도해주세요.</p>
+        </div>
+      );
+    }
+
+    return (
+      <>
+        <h1 className="upload-title">파일 자동 분류</h1>
+        <FiUploadCloud className="upload-icon" />
+        <p className="upload-prompt">여기에 파일을 놓으면 수정 시간을 기준으로 자동 분류됩니다.</p>
+        <p className="or-divider">또는</p>
+        <label htmlFor="file-upload" className="upload-button">
+          파일 선택
+        </label>
+        <input
+          id="file-upload"
+          type="file"
+          onChange={handleFileChange}
+          style={{ display: 'none' }}
+          onClick={(e) => e.stopPropagation()}
+        />
+      </>
+    );
   };
 
   return (
@@ -76,44 +121,11 @@ const TaskwaveUpload = () => {
           onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
           onDragLeave={() => setIsDragging(false)}
           onDrop={handleDrop}
-          onClick={handleUploadBoxClick}
-          style={{ cursor: selectedFile ? 'default' : 'pointer' }}
+          onClick={() => document.getElementById('file-upload')?.click()}
+          style={{ cursor: isUploading ? 'default' : 'pointer' }}
         >
-          {selectedFile ? (
-            <div className="file-info">
-              <p className="file-name">✅ {selectedFile.name}</p>
-              <p className="file-ready-text">파일 업로드 및 분석을 진행합니다…</p>
-              <div className="timer-bar-container">
-                <div className="timer-bar"></div>
-              </div>
-            </div>
-          ) : (
-            <>
-              <h1 className="upload-title">시간표 업로드</h1>
-              <FiUploadCloud className="upload-icon" />
-              <p className="upload-prompt">여기에 시간표 PDF 또는 이미지 파일을 놓으세요.</p>
-              <p className="or-divider">또는</p>
-              <div className="upload-button">
-                파일 선택
-              </div>
-              <input
-                id="file-upload"
-                type="file"
-                accept=".png,.jpg,.jpeg,.webp,.pdf"
-                onChange={handleFileChange}
-                style={{ display: 'none' }}
-                onClick={(e) => e.stopPropagation()}
-              />
-            </>
-          )}
+          {renderUploadState()}
         </div>
-
-        {result && (
-          <div className="result-block">
-            <h3>분석 결과</h3>
-            <pre>{JSON.stringify(result, null, 2)}</pre>
-          </div>
-        )}
       </main>
     </div>
   );
