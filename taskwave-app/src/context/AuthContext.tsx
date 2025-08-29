@@ -3,9 +3,26 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import { fetchJSON, loadToken, clearToken } from '../lib/http';
 import { EP } from '../lib/endpoints';
 
-// 새로운 파일 시스템 구조에 맞는 타입 정의
-// 예: { "과목 A": { "2025-09-02": [], "2025-09-09": [] } }
-export type FileSystemStructure = Record<string, Record<string, any[]>>;
+// --- 새로운 파일 시스템 타입 정의 ---
+export interface FileInfo {
+  id: string;
+  name: string;
+  file_url: string;
+  mime_type: string;
+  size_bytes?: number;
+}
+
+export interface DateInfo {
+  session_id: string;
+  files: FileInfo[];
+}
+
+export interface SubjectInfo {
+  subject_id: string;
+  dates: Record<string, DateInfo>;
+}
+
+export type FileSystemStructure = Record<string, SubjectInfo>;
 
 export type User = {
   id: string;
@@ -19,7 +36,7 @@ export type AuthContextType = {
   user: User | null;
   refreshMe: () => Promise<void>;
   logout: () => void;
-  fileSystem: FileSystemStructure; // 타입 변경
+  fileSystem: FileSystemStructure;
   updateProfile: (next: Partial<User>) => Promise<void>;
 };
 
@@ -27,28 +44,25 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
-  // setFileSystem을 사용하도록 변경
   const [fileSystem, setFileSystem] = useState<FileSystemStructure>({});
 
   const refreshMe = async () => {
     const token = loadToken();
     if (!token) {
       setUser(null);
-      setFileSystem({}); // 로그아웃 상태에서는 파일 시스템도 비움
+      setFileSystem({});
       return;
     }
     try {
-      // 1. 사용자 정보 가져오기
       const me = await fetchJSON<User>(EP.ME, { method: 'GET' });
       setUser(me);
 
-      // 2. 파일 구조 정보 가져오기 (사용자 정보 로드 성공 후)
       try {
         const structure = await fetchJSON<FileSystemStructure>(EP.FILES_STRUCTURE, { method: 'GET' });
         setFileSystem(structure);
       } catch (fsError) {
         console.error("Failed to fetch file system structure:", fsError);
-        setFileSystem({}); // 실패 시 비움
+        setFileSystem({});
       }
 
     } catch {
@@ -71,7 +85,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       });
       await refreshMe();
     } catch {
-      // 낙관적 업데이트 (실패해도 화면은 반영)
       setUser(prev => (prev ? { ...prev, ...next } : prev));
     }
   };
@@ -79,7 +92,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const logout = () => {
     clearToken();
     setUser(null);
-    setFileSystem({}); // 로그아웃 시 파일 시스템 비우기
+    setFileSystem({});
   };
 
   return (

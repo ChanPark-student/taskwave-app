@@ -1,50 +1,72 @@
 from fastapi import APIRouter, Depends
+from pydantic import BaseModel
+from sqlalchemy.orm import Session
 from typing import Dict, List
+from collections import defaultdict
 
-from app.core.deps import get_current_user
+from app.core.deps import get_db, get_current_user
 from app.models.user import User
+from app.models.material import Material
+from app.schemas.material import MaterialOut
 
-# 응답 모델 정의: Dict[과목명, Dict[날짜, 파일리스트]]
-FileSystemStructure = Dict[str, Dict[str, List]]
+# --- API 응답을 위한 새로운 스키마 정의 ---
+class FileInfo(MaterialOut):
+    pass
+
+class DateInfo(BaseModel):
+    session_id: str
+    files: List[FileInfo]
+
+class SubjectInfo(BaseModel):
+    subject_id: str
+    dates: Dict[str, DateInfo]
+
+FileSystemStructure = Dict[str, SubjectInfo]
 
 router = APIRouter()
 
 @router.get(
     "/files/structure",
     response_model=FileSystemStructure,
-    summary="Get user's file and folder structure",
-    description="Builds a nested dictionary representing the user's subjects and all their session dates."
+    summary="Get user's file and folder structure with files",
+    description="Builds a nested dictionary representing subjects, session dates, and associated materials."
 )
 def get_files_structure(
+    db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
     """
-    사용자의 과목과 각 강의 세션 날짜로부터 파일 시스템과 유사한 구조를 생성합니다.
-    - 최상위 키: 과목명
-    - 두 번째 레벨 키: "YYYY-MM-DD" 형식의 실제 강의 날짜
-    - 값: 향후 파일 메타데이터를 위해 예약된 빈 리스트
+    사용자의 과목, 강의 세션 날짜, 그리고 각 세션에 연결된 파일 목록으로 파일 시스템 구조를 생성합니다.
+    프론트엔드가 파일 업로드에 필요한 subject_id와 session_id를 포함합니다.
     """
-    file_system: Dict[str, Dict[str, List]] = {}
+    # 1. 사용자의 모든 자료를 효율적으로 조회하여 session_id 기준으로 그룹화합니다.
+    user_materials = db.query(Material).filter(Material.owner_id == current_user.id).all()
+    materials_by_session_id = defaultdict(list)
+    for material in user_materials:
+        if material.session_id:
+            materials_by_session_id[material.session_id].append(FileInfo.model_validate(material))
 
-    # SQLAlchemy relationship을 통해 current_user 객체에서 바로 과목 목록에 접근 가능
-    # 일관된 순서를 위해 과목명을 기준으로 정렬
+    # 2. 최종적으로 반환할 파일 시스템 구조를 빌드합니다.
+    file_system: Dict[str, SubjectInfo] = {}
     sorted_subjects = sorted(current_user.subjects, key=lambda s: s.title)
 
     for subject in sorted_subjects:
-        dates_for_subject: Dict[str, List] = {}
-        
+        dates_for_subject: Dict[str, DateInfo] = {}
         for week in subject.weeks:
             for session in week.sessions:
-                # session.date는 Python의 date 객체이므로 .isoformat()으로 "YYYY-MM-DD" 문자열로 변환
                 date_str = session.date.isoformat()
-                
-                # 해당 날짜 키가 처음 나타나는 경우, 빈 리스트로 초기화
                 if date_str not in dates_for_subject:
-                    dates_for_subject[date_str] = []
+                    # 각 날짜별로 session_id와 해당 세션에 속한 파일 목록으로 구성
+                    dates_for_subject[date_str] = DateInfo(
+                        session_id=session.id,
+                        files=materials_by_session_id.get(session.id, [])
+                    )
         
         if dates_for_subject:
-            # 날짜를 시간순으로 정렬하여 최종 객체에 추가
-            sorted_dates = dict(sorted(dates_for_subject.items()))
-            file_system[subject.title] = sorted_dates
+            # 과목별로 subject_id와 날짜 목록을 포함하여 구성
+            file_system[subject.title] = SubjectInfo(
+                subject_id=subject.id,
+                dates=dict(sorted(dates_for_subject.items()))
+            )
             
     return file_system
