@@ -1,9 +1,8 @@
 import { useState, useEffect, useCallback, ChangeEvent } from 'react';
-import { useNavigate } from 'react-router-dom';
 import Header from './Header.tsx';
 import { useAuth, User } from './context/AuthContext.tsx';
-import { fetchJSON } from '../lib/http';
-import { EP } from '../lib/endpoints';
+import { fetchJSON } from './lib/http';
+import { EP } from './lib/endpoints';
 import './MyPage.css';
 
 // API 응답 데이터 타입 정의
@@ -112,7 +111,6 @@ const WeeklyTimetableView = () => {
 };
 
 const MyPage = () => {
-  const navigate = useNavigate();
   const { user, updateProfile } = useAuth();
   const [isEditingProfile, setIsEditingProfile] = useState(false);
   const [tempProfile, setTempProfile] = useState<User | null>(user);
