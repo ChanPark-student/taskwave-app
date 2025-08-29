@@ -1,13 +1,14 @@
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from uuid import uuid4
 from datetime import date, timedelta
+from typing import List
 
 from app.core.deps import get_db, get_current_user
 from app.models.user import User
 from app.models.subject import Subject
 from app.models.schedule import Week, Session as SessionModel
-from app.schemas.subject import ManualScheduleIn
+from app.schemas.subject import ManualScheduleIn, SessionForWeekView
 
 router = APIRouter()
 
@@ -82,3 +83,39 @@ def create_manual_schedule(
 @router.get("/schedules/ping")
 def ping():
     return {"ok": True}
+
+@router.get("/schedules/week-view", response_model=List[SessionForWeekView])
+def get_week_view(
+    week_no: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """
+    현재 사용자의 특정 주차에 해당하는 모든 강의 세션을 조회합니다.
+    """
+    weekday_to_kor = {0: "월", 1: "화", 2: "수", 3: "목", 4: "금", 5: "토", 6: "일"}
+
+    sessions = db.query(SessionModel).join(Week).join(Subject).filter(
+        Subject.user_id == current_user.id,
+        Week.week_no == week_no
+    ).options(
+        joinedload(SessionModel.week).joinedload(Week.subject)
+    ).order_by(SessionModel.date, SessionModel.start_time).all()
+
+    if not sessions:
+        return []
+
+    result = []
+    for s in sessions:
+        result.append(
+            SessionForWeekView(
+                subject_title=s.week.subject.title,
+                session_id=s.id,
+                day_of_week=weekday_to_kor.get(s.date.weekday(), "알수없음"),
+                start_time=s.start_time,
+                end_time=s.end_time,
+                # 향후 과목별 색상을 여기에 할당할 수 있습니다.
+                color="#4A90E2" 
+            )
+        )
+    return result

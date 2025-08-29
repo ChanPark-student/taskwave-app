@@ -50,3 +50,14 @@ class ManualScheduleIn(BaseModel):
             if time.fromisoformat(slot.start_time) >= time.fromisoformat(slot.end_time):
                 raise ValueError(f"Slot for '{slot.subject_title}' has end_time before or same as start_time.")
         return self
+
+# API: GET /schedules/week-view 를 위한 응답 스키마
+class SessionForWeekView(BaseModel):
+    subject_title: str
+    session_id: str
+    day_of_week: str  # 예: "월", "화"
+    start_time: time
+    end_time: time
+    color: str | None = "#4A90E2" # 과목별 색상 (향후 구현)
+
+    model_config = {"from_attributes": True}
