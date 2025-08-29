@@ -1,6 +1,6 @@
 // src/TaskwaveUpload.tsx
 import './TaskwaveUpload.css';
-import { useState, useEffect, ChangeEvent, DragEvent } from 'react';
+import { useState, ChangeEvent, DragEvent } from 'react';
 import { FiUploadCloud, FiCheckCircle, FiAlertCircle } from 'react-icons/fi';
 import Header from './Header';
 import { useAuth } from './context/AuthContext';
