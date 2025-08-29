@@ -7,6 +7,9 @@ export const EP = {
   // 파일/폴더 구조
   FILES_STRUCTURE: '/api/files/structure',
 
+  // 주간 시간표 뷰
+  SCHEDULES_WEEK_VIEW: '/api/schedules/week-view',
+
   SUBJECTS: '/api/subjects',
   SUBJECT: (id: number|string) => `/api/subjects/${id}`,
   SUBJECT_WEEKS: (id: number|string) => `/api/subjects/${id}/weeks`,
