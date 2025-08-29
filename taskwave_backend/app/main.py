@@ -1,6 +1,8 @@
 # app/main.py
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from pathlib import Path
 
 import os
 import json
@@ -14,11 +16,20 @@ from app.routers.subjects import router as subjects_router
 from app.routers.materials import router as materials_router
 from app.routers.uploads import router as uploads_router
 from app.routers.schedules import router as schedules_router
-from app.routers.files import router as files_router  # 추가
-from app.routers import misc  # misc.router 사용
+from app.routers.files import router as files_router
+from app.routers import misc
 from app.db.session import engine
 from app.db.base import Base
+
 app = FastAPI()
+
+# --- 정적 파일 마운트 --- #
+# MEDIA_ROOT 디렉토리가 없으면 생성
+media_path = Path(settings.MEDIA_ROOT)
+media_path.mkdir(parents=True, exist_ok=True)
+
+# /media URL 경로를 실제 media_path 디렉토리와 연결
+app.mount("/media", StaticFiles(directory=media_path), name="media")
 
 
 def _parse_origins(val: Any) -> List[str]:
@@ -91,7 +102,7 @@ app.include_router(subjects_router, prefix="/api")
 app.include_router(materials_router, prefix="/api")
 app.include_router(schedules_router, prefix="/api")
 app.include_router(uploads_router, prefix="/api")
-app.include_router(files_router, prefix="/api")  # 추가
+app.include_router(files_router, prefix="/api")
 app.include_router(misc.router, prefix="/api")
 
 @app.get("/api/health", tags=["health"])
