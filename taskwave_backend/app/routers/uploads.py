@@ -30,18 +30,16 @@ async def upload_and_auto_sort_file(
 ):
     """
     파일을 업로드하고, 파일의 최종 수정 시간을 기준으로 가장 적합한 강의 세션에 자동으로 연결합니다.
+    일치하는 세션이 없으면 'etc' 과목에 연결합니다.
     """
     # 1. 타임스탬프를 KST로 변환
     try:
-        # JS에서 받은 밀리초 타임스탬프를 초 단위로 바꾸고 UTC datetime 객체 생성
         dt_utc = datetime.fromtimestamp(last_modified / 1000, tz=timezone.utc)
-        # 한국 시간(KST, UTC+9)으로 변환
         dt_kst = dt_utc + timedelta(hours=9)
     except Exception:
         raise HTTPException(status_code=400, detail="Invalid timestamp format")
 
     # 2. 일치하는 세션 찾기
-    # 먼저 날짜(date)로 필터링하여 성능 최적화
     sessions_on_date = (
         db.query(SessionModel)
         .join(Week).join(Subject)
@@ -53,7 +51,6 @@ async def upload_and_auto_sort_file(
 
     matched_session = None
     for session in sessions_on_date:
-        # DB의 start_time, end_time은 timezone 정보가 없으므로, KST 시간과 직접 비교
         if session.start_time <= dt_kst.time() <= session.end_time:
             matched_session = session
             break
@@ -67,11 +64,19 @@ async def upload_and_auto_sort_file(
         subject_id = matched_session.week.subject_id
         week_id = matched_session.week_id
         session_id = matched_session.id
+    else:
+        # 일치하는 세션이 없으면 'etc' 과목을 찾아 연결
+        etc_subject = db.query(Subject).filter(Subject.user_id == current_user.id, Subject.title == "etc").first()
+        if not etc_subject:
+            etc_subject = Subject(id=str(uuid4()), user_id=current_user.id, title="etc")
+            db.add(etc_subject)
+            db.flush() # id를 할당받기 위해 flush
+        subject_id = etc_subject.id
 
     mat = Material(
         id=str(uuid4()),
         owner_id=current_user.id,
-        subject_id=subject_id, # 일치하는 경우에만 ID 저장
+        subject_id=subject_id,
         week_id=week_id,
         session_id=session_id,
         name=file.filename or "untitled",
