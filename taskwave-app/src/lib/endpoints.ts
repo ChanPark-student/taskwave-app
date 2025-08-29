@@ -4,6 +4,9 @@ export const EP = {
 
   ME: '/api/users/me',
 
+  // 파일/폴더 구조
+  FILES_STRUCTURE: '/api/files/structure',
+
   SUBJECTS: '/api/subjects',
   SUBJECT: (id: number|string) => `/api/subjects/${id}`,
   SUBJECT_WEEKS: (id: number|string) => `/api/subjects/${id}/weeks`,

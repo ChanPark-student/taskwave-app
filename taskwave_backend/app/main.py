@@ -14,6 +14,7 @@ from app.routers.subjects import router as subjects_router
 from app.routers.materials import router as materials_router
 from app.routers.uploads import router as uploads_router
 from app.routers.schedules import router as schedules_router
+from app.routers.files import router as files_router  # 추가
 from app.routers import misc  # misc.router 사용
 from app.db.session import engine
 from app.db.base import Base
@@ -90,6 +91,7 @@ app.include_router(subjects_router, prefix="/api")
 app.include_router(materials_router, prefix="/api")
 app.include_router(schedules_router, prefix="/api")
 app.include_router(uploads_router, prefix="/api")
+app.include_router(files_router, prefix="/api")  # 추가
 app.include_router(misc.router, prefix="/api")
 
 @app.get("/api/health", tags=["health"])
