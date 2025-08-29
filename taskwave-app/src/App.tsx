@@ -15,10 +15,10 @@ function App() {
       <Route path="/signup" element={<SignupPage />} />
       <Route path="/mypage" element={<MyPage />} />
       
+      {/* 파일 탐색기 라우팅을 새로운 구조로 수정 */}
       <Route path="/files" element={<FileExplorerPage />} />
       <Route path="/files/:subject" element={<FileExplorerPage />} />
-      <Route path="/files/:subject/:week" element={<FileExplorerPage />} />
-      <Route path="/files/:subject/:week/:day" element={<FileExplorerPage />} />
+      <Route path="/files/:subject/:date" element={<FileExplorerPage />} />
 
       {/* 2. 추가 정보 페이지 경로 추가 */}
       <Route path="/signup-info" element={<AdditionalInfoPage />} />
