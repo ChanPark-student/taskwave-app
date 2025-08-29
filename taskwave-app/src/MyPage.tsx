@@ -1,8 +1,10 @@
 import { useState, useEffect, useCallback, ChangeEvent } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Header from './Header.tsx';
 import { useAuth, User } from './context/AuthContext.tsx';
 import { fetchJSON } from './lib/http';
 import { EP } from './lib/endpoints';
+import { FiUploadCloud } from 'react-icons/fi'; // 업로드 아이콘 임포트 복원
 import './MyPage.css';
 
 // API 응답 데이터 타입 정의
@@ -17,10 +19,11 @@ interface Session {
 
 // 주간 시간표 뷰 컴포넌트
 const WeeklyTimetableView = () => {
+  const navigate = useNavigate();
   const [sessions, setSessions] = useState<Session[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedWeek, setSelectedWeek] = useState(1); // 기본 1주차
+  const [selectedWeek, setSelectedWeek] = useState(1);
 
   const fetchSessions = useCallback(async (week: number) => {
     setIsLoading(true);
@@ -43,13 +46,12 @@ const WeeklyTimetableView = () => {
 
   const timeToRow = (time: string): number => {
     const [hour, minute] = time.split(':').map(Number);
-    // 09:00가 2번째 행에서 시작 (1번째 행은 요일 헤더)
     return (hour - 9) * 2 + (minute / 30) + 2;
   };
 
   const dayToColumn = (day: string): number => {
     const dayMap: { [key: string]: number } = { '월': 2, '화': 3, '수': 4, '목': 5, '금': 6, '토': 7, '일': 8 };
-    return dayMap[day] || -1; // 1번째 열은 시간 라벨
+    return dayMap[day] || -1;
   };
 
   const timeLabels = Array.from({ length: (20 - 9) * 2 }, (_, i) => {
@@ -111,13 +113,24 @@ const WeeklyTimetableView = () => {
 };
 
 const MyPage = () => {
+  const navigate = useNavigate();
   const { user, updateProfile } = useAuth();
   const [isEditingProfile, setIsEditingProfile] = useState(false);
   const [tempProfile, setTempProfile] = useState<User | null>(user);
+  // 시간표 이미지 업로드 관련 상태 복원
+  const [timetableImage, setTimetableImage] = useState<string | null>(null);
 
   useEffect(() => {
     setTempProfile(user);
   }, [user]);
+
+  // 시간표 이미지 업로드 핸들러 복원
+  const handleImageUpload = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setTimetableImage(URL.createObjectURL(file));
+    }
+  };
 
   const handleEditClick = () => {
     setTempProfile(user);
@@ -162,7 +175,6 @@ const MyPage = () => {
                 </div>
               )}
             </div>
-
             {!isEditingProfile ? (
               <div className="profile-details">
                 <p><strong>성명</strong><span>{user.name || '-'}</span></p>
@@ -187,8 +199,35 @@ const MyPage = () => {
             )}
           </section>
 
-          {/* 기존 timetable-section을 새로운 WeeklyTimetableView 컴포넌트로 교체 */}
-          <WeeklyTimetableView />
+          {/* 오른쪽 영역: 시간표 뷰와 관리 섹션을 포함하는 컨테이너 */}
+          <div className="timetable-management-area">
+            <WeeklyTimetableView />
+
+            {/* 시간표 관리(업로드/수동입력) 섹션 복원 */}
+            <section className="timetable-upload-section">
+              <div className="section-header">
+                <h2>시간표 관리</h2>
+              </div>
+              {!timetableImage ? (
+                <div className="timetable-upload-box">
+                  <div className="upload-area">
+                    <FiUploadCloud className="upload-icon" />
+                    <p>시간표 파일을 업로드하면 자동으로 분석해 드립니다.</p>
+                    <label htmlFor="timetable-upload" className="upload-button">파일 업로드</label>
+                    <input id="timetable-upload" type="file" accept="image/*,.pdf" onChange={handleImageUpload} style={{ display: 'none' }} />
+                  </div>
+                </div>
+              ) : (
+                <div className="timetable-display-box">
+                  <p>현재 업로드된 시간표:</p>
+                  <img src={timetableImage} alt="업로드된 시간표" />
+                  <label htmlFor="timetable-modify" className="change-button">다른 파일 선택</label>
+                  <input id="timetable-modify" type="file" accept="image/*,.pdf" onChange={handleImageUpload} style={{ display: 'none' }} />
+                </div>
+              )}
+              <button onClick={() => navigate('/add-schedule')} className="manual-add-button">수동으로 시간표 입력</button>
+            </section>
+          </div>
 
         </div>
       </main>
