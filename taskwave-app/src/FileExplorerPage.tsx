@@ -27,7 +27,8 @@ const FileExplorerPage = () => {
 
     const subjectData = fileSystem[subject];
     const dateData = subjectData?.dates?.[date];
-    if (!subjectData || !dateData) {
+    // 'etc' 폴더의 경우, subjectData는 있지만 dateData는 없을 수 있음. subject_id만 사용.
+    if (!subjectData || (!dateData && subject !== 'etc')) {
       setUploadError('업로드에 필요한 ID 정보를 찾을 수 없습니다.');
       return;
     }
@@ -38,7 +39,10 @@ const FileExplorerPage = () => {
     const formData = new FormData();
     formData.append('file', file);
     formData.append('subject_id', subjectData.subject_id);
-    formData.append('session_id', dateData.session_id);
+    // dateData가 있을 경우에만 session_id를 추가
+    if (dateData?.session_id) {
+      formData.append('session_id', dateData.session_id);
+    }
     formData.append('name', file.name);
 
     try {
@@ -56,9 +60,7 @@ const FileExplorerPage = () => {
   };
 
   const renderContent = () => {
-    // 렌더링 로직을 명확한 if/else if/else 구조로 변경
     if (subject && date) {
-      // 2단계: 날짜 폴더 내부 (파일 목록)
       const dateInfo = fileSystem[subject]?.dates?.[date];
       const files = dateInfo?.files || [];
 
@@ -85,7 +87,6 @@ const FileExplorerPage = () => {
         </>
       );
     } else if (subject) {
-      // 1단계: 과목 폴더 내부 (날짜 폴더 목록)
       const dates = fileSystem[subject]?.dates || {};
       const dateKeys = Object.keys(dates);
       if (dateKeys.length === 0) return <div className="empty-folder-message">생성된 날짜 폴더가 없습니다.</div>;
@@ -97,13 +98,23 @@ const FileExplorerPage = () => {
         </Link>
       ));
     } else {
-      // 최상위: 모든 과목 폴더
-      return Object.keys(fileSystem).map(subjectName => (
-        <Link to={`/files/${subjectName}`} key={subjectName} className="folder-item">
-          <FiFolder />
-          <span>{subjectName}</span>
-        </Link>
+      const subjectFolders = Object.keys(fileSystem)
+        .filter(name => name.toLowerCase() !== 'etc')
+        .map(subjectName => (
+          <Link to={`/files/${subjectName}`} key={subjectName} className="folder-item">
+            <FiFolder />
+            <span>{subjectName}</span>
+          </Link>
       ));
+
+      subjectFolders.push(
+        <Link to="/files/etc" key="etc" className="folder-item">
+          <FiFolder />
+          <span>etc</span>
+        </Link>
+      );
+
+      return subjectFolders;
     }
   };
 
