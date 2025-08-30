@@ -29,7 +29,7 @@ interface RecurringSchedulePayload {
 // --- 자식 컴포넌트 ---
 
 const WeeklyTimetableView = () => {
-  const { fileSystem } = useAuth(); // 전체 과목 목록을 위해 AuthContext 사용
+  const { fileSystem } = useAuth();
   const [sessions, setSessions] = useState<Session[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -54,10 +54,23 @@ const WeeklyTimetableView = () => {
     fetchSessions(selectedWeek);
   }, [selectedWeek, fetchSessions]);
 
-  // 전체 과목 목록 기준으로 색상 맵을 생성 (주차가 바뀌어도 색이 유지됨)
   const subjectColorMap = useMemo(() => {
-    const PALETTE = ['#4A90E2', '#50E3C2', '#B8E986', '#F8E71C', '#F5A623', '#BD10E0', '#9013FE', '#D0021B', '#007BFF', '#28A745', '#FFC107', '#DC3545'];
-    const allSubjects = Object.keys(fileSystem).sort(); // 일관된 순서를 위해 정렬
+    // 가독성 높은 새로운 색상 팔레트 (12가지)
+    const PALETTE = [
+      '#2979FF', // Blue
+      '#00BFA5', // Teal
+      '#651FFF', // Deep Purple
+      '#D50000', // Red
+      '#FF6D00', // Orange
+      '#546E7A', // Slate Gray
+      '#C51162', // Pink
+      '#0097A7', // Cyan
+      '#2E7D32', // Green
+      '#3D5AFE', // Indigo
+      '#D500F9', // Magenta
+      '#6D4C41'  // Brown
+    ];
+    const allSubjects = Object.keys(fileSystem).sort();
     const colorMap: Record<string, string> = {};
     allSubjects.forEach((subject, index) => {
       colorMap[subject] = PALETTE[index % PALETTE.length];
@@ -115,7 +128,7 @@ const WeeklyTimetableView = () => {
                 style={{
                   gridColumn: gridColumn,
                   gridRow: `${gridRowStart} / ${gridRowEnd}`,
-                  backgroundColor: subjectColorMap[session.subject_title] || '#888',
+                  backgroundColor: subjectColorMap[session.subject_title] || '#37474F', // 기본색도 어둡게 변경
                 }}
                 title={`${session.subject_title} (${startTimeFormatted}-${endTimeFormatted})`}
               >
