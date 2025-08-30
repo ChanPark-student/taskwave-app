@@ -12,8 +12,8 @@ interface Session {
   subject_title: string;
   session_id: string;
   day_of_week: string;
-  start_time: string; // "HH:MM"
-  end_time: string;   // "HH:MM"
+  start_time: string; // "HH:MM:SS"
+  end_time: string;   // "HH:MM:SS"
   color: string | null;
 }
 
@@ -59,6 +59,9 @@ const WeeklyTimetableView = () => {
     return `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
   });
 
+  // HH:MM:SS -> HH:MM 형식으로 바꾸는 헬퍼 함수
+  const formatTime = (timeStr?: string) => timeStr?.substring(0, 5) || '';
+
   return (
     <section className="timetable-view-section">
       <div className="section-header">
@@ -86,6 +89,8 @@ const WeeklyTimetableView = () => {
             const gridColumn = dayToColumn(session.day_of_week);
             const gridRowStart = timeToRow(session.start_time);
             const gridRowEnd = timeToRow(session.end_time);
+            const startTimeFormatted = formatTime(session.start_time);
+            const endTimeFormatted = formatTime(session.end_time);
 
             if (gridColumn === -1 || gridRowStart < 2) return null;
 
@@ -98,10 +103,10 @@ const WeeklyTimetableView = () => {
                   gridRow: `${gridRowStart} / ${gridRowEnd}`,
                   backgroundColor: session.color || '#4A90E2',
                 }}
-                title={`${session.subject_title} (${session.start_time}-${session.end_time})`}
+                title={`${session.subject_title} (${startTimeFormatted}-${endTimeFormatted})`}
               >
                 <div className="session-title">{session.subject_title}</div>
-                <div className="session-time">{session.start_time} - {session.end_time}</div>
+                <div className="session-time">{startTimeFormatted} - {endTimeFormatted}</div>
               </div>
             );
           })}
