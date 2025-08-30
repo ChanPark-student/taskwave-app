@@ -29,6 +29,7 @@ interface RecurringSchedulePayload {
 // --- 자식 컴포넌트 ---
 
 const WeeklyTimetableView = () => {
+  const { fileSystem } = useAuth(); // 전체 과목 목록을 위해 AuthContext 사용
   const [sessions, setSessions] = useState<Session[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -53,16 +54,16 @@ const WeeklyTimetableView = () => {
     fetchSessions(selectedWeek);
   }, [selectedWeek, fetchSessions]);
 
-  // 과목명에 따라 고유한 색상을 할당하는 로직
+  // 전체 과목 목록 기준으로 색상 맵을 생성 (주차가 바뀌어도 색이 유지됨)
   const subjectColorMap = useMemo(() => {
-    const PALETTE = ['#4A90E2', '#50E3C2', '#B8E986', '#F8E71C', '#F5A623', '#BD10E0', '#9013FE', '#D0021B'];
-    const uniqueSubjects = [...new Set(sessions.map(s => s.subject_title))];
+    const PALETTE = ['#4A90E2', '#50E3C2', '#B8E986', '#F8E71C', '#F5A623', '#BD10E0', '#9013FE', '#D0021B', '#007BFF', '#28A745', '#FFC107', '#DC3545'];
+    const allSubjects = Object.keys(fileSystem).sort(); // 일관된 순서를 위해 정렬
     const colorMap: Record<string, string> = {};
-    uniqueSubjects.forEach((subject, index) => {
+    allSubjects.forEach((subject, index) => {
       colorMap[subject] = PALETTE[index % PALETTE.length];
     });
     return colorMap;
-  }, [sessions]);
+  }, [fileSystem]);
 
   const timeToRow = (time: string): number => {
     const [hour, minute] = time.split(':').map(Number);
