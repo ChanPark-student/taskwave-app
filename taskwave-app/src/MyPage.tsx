@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, ChangeEvent, FormEvent } from 'react';
+import { useState, useEffect, useCallback, ChangeEvent, FormEvent, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FiUploadCloud, FiChevronUp, FiChevronDown } from 'react-icons/fi';
 import Header from './Header.tsx';
@@ -53,6 +53,17 @@ const WeeklyTimetableView = () => {
     fetchSessions(selectedWeek);
   }, [selectedWeek, fetchSessions]);
 
+  // 과목명에 따라 고유한 색상을 할당하는 로직
+  const subjectColorMap = useMemo(() => {
+    const PALETTE = ['#4A90E2', '#50E3C2', '#B8E986', '#F8E71C', '#F5A623', '#BD10E0', '#9013FE', '#D0021B'];
+    const uniqueSubjects = [...new Set(sessions.map(s => s.subject_title))];
+    const colorMap: Record<string, string> = {};
+    uniqueSubjects.forEach((subject, index) => {
+      colorMap[subject] = PALETTE[index % PALETTE.length];
+    });
+    return colorMap;
+  }, [sessions]);
+
   const timeToRow = (time: string): number => {
     const [hour, minute] = time.split(':').map(Number);
     return (hour - 9) * 2 + (minute / 30) + 2;
@@ -103,7 +114,7 @@ const WeeklyTimetableView = () => {
                 style={{
                   gridColumn: gridColumn,
                   gridRow: `${gridRowStart} / ${gridRowEnd}`,
-                  backgroundColor: session.color || '#4A90E2',
+                  backgroundColor: subjectColorMap[session.subject_title] || '#888',
                 }}
                 title={`${session.subject_title} (${startTimeFormatted}-${endTimeFormatted})`}
               >

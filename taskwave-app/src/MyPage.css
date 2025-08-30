@@ -41,6 +41,35 @@
   white-space: nowrap;
 }
 
+.change-button {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-gray);
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.profile-details p {
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+  margin: 20px 0;
+  gap: 24px; /* 라벨과 값 사이 간격 */
+}
+
+.profile-details p strong {
+  font-weight: 700;
+  width: 80px; /* 라벨 너비 고정 */
+  flex-shrink: 0; /* 라벨이 줄어들지 않도록 */
+  color: #555;
+}
+
+.profile-details p span {
+  color: #222;
+}
+
+
 /* --- 오른쪽 영역 전체 --- */
 .timetable-management-area {
   flex: 2;
@@ -286,6 +315,13 @@
 }
 
 /* --- 시간표 관리(업로드/수동) 섹션 --- */
+.timetable-upload-section {
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 16px;
+  padding: 32px;
+}
+
 .timetable-upload-box {
   text-align: center;
 }
