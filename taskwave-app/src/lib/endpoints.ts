@@ -22,6 +22,7 @@ export const EP = {
   TIMETABLE_UPLOAD: '/api/timetable/upload',
   UPLOADS_AUTO_SORT: '/api/uploads/auto-sort', // 자동 분류 업로드
   SCHEDULES_MANUAL: '/api/schedules/manual',
+  SCHEDULES_RECURRING: '/api/schedules/recurring', // 반복 일정 생성
 
   SCHEDULES_PING: '/api/schedules/ping',
   HEALTH: '/api/health',

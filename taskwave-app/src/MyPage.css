@@ -41,16 +41,6 @@
   white-space: nowrap;
 }
 
-.profile-details p {
-  display: flex;
-  justify-content: space-between;
-  font-size: 16px;
-  margin: 16px 0;
-}
-.profile-details p strong {
-  font-weight: 700;
-}
-
 /* --- 오른쪽 영역 전체 --- */
 .timetable-management-area {
   flex: 2;
@@ -59,8 +49,10 @@
   gap: 32px;
 }
 
-/* --- 주간 시간표 뷰 --- */
-.timetable-view-section {
+/* --- 공통 섹션 스타일 --- */
+.timetable-view-section,
+.personal-schedule-section,
+.timetable-upload-section {
   background-color: #ffffff;
   border: 1px solid #e0e0e0;
   border-radius: 16px;
@@ -68,6 +60,8 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
+
+/* --- 주간 시간표 뷰 --- */
 .week-selector {
   display: flex;
   align-items: center;
@@ -195,15 +189,103 @@
   opacity: 0.9;
 }
 
-/* --- 시간표 관리(업로드/수동) 섹션 --- */
-.timetable-upload-section {
-  background-color: #ffffff;
-  border: 1px solid #e0e0e0;
-  border-radius: 16px;
-  padding: 32px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+/* --- 개인 일정 관리 섹션 --- */
+.personal-schedule-section .section-header {
+  cursor: pointer;
+  margin-bottom: 0;
+  border-bottom: none;
 }
 
+.personal-schedule-section .section-header.open {
+  margin-bottom: 24px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.toggle-button {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: #555;
+}
+
+.recurring-form {
+  margin-top: 24px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.form-row.full-width {
+  grid-column: 1 / -1;
+}
+
+.form-row label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.form-row input[type="text"],
+.form-row input[type="date"],
+.form-row input[type="time"] {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 16px;
+  font-family: inherit;
+}
+
+.weekday-selector .weekdays {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.weekday-btn {
+  padding: 10px 16px;
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  background-color: #fff;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.weekday-btn.selected {
+  background-color: var(--primary-dark-green);
+  color: white;
+  border-color: var(--primary-dark-green);
+}
+
+.form-error {
+  color: #d9534f;
+  margin-top: 16px;
+}
+
+.recurring-form .save-button {
+  width: 100%;
+  padding: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  color: white;
+  background-color: var(--primary-dark-green);
+  border-radius: 8px;
+  margin-top: 24px;
+  transition: opacity 0.2s;
+}
+
+.recurring-form .save-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* --- 시간표 관리(업로드/수동) 섹션 --- */
 .timetable-upload-box {
   text-align: center;
 }

@@ -8,11 +8,80 @@ from app.core.deps import get_db, get_current_user
 from app.models.user import User
 from app.models.subject import Subject
 from app.models.schedule import Week, Session as SessionModel
-from app.schemas.subject import ManualScheduleIn, SessionForWeekView
+from app.schemas.subject import ManualScheduleIn, SessionForWeekView, RecurringScheduleIn
 
 router = APIRouter()
 
 WEEKDAY_MAP = {"월": 0, "화": 1, "수": 2, "목": 3, "금": 4, "토": 5, "일": 6}
+
+@router.post("/schedules/recurring", status_code=201)
+def create_recurring_schedule(
+    payload: RecurringScheduleIn,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """
+    지정된 기간과 요일에 따라 반복되는 개인 일정을 생성합니다.
+    """
+    # 1. 과목(일정 제목)을 찾거나 새로 생성합니다.
+    subject = db.query(Subject).filter(
+        Subject.user_id == current_user.id,
+        Subject.title == payload.title
+    ).first()
+    if not subject:
+        subject = Subject(
+            id=str(uuid4()),
+            user_id=current_user.id,
+            title=payload.title
+        )
+        db.add(subject)
+        db.flush() # subject.id를 사용하기 위해 flush
+
+    # 2. 날짜 범위 내에서 해당 요일에 세션을 생성합니다.
+    target_weekdays = {WEEKDAY_MAP[day] for day in payload.weekdays}
+    current_date = payload.start_date
+    
+    # 주차(week_no) 계산을 위한 기준 날짜 (첫 주의 월요일)
+    start_monday = payload.start_date - timedelta(days=payload.start_date.weekday())
+    sessions_created = 0
+
+    while current_date <= payload.end_date:
+        if current_date.weekday() in target_weekdays:
+            # 주차 번호 계산
+            week_no = (current_date - start_monday).days // 7 + 1
+
+            # 해당 주(Week)가 이미 있는지 확인, 없으면 생성
+            week = db.query(Week).filter(
+                Week.subject_id == subject.id,
+                Week.week_no == week_no
+            ).first()
+            if not week:
+                week = Week(
+                    id=str(uuid4()),
+                    subject_id=subject.id,
+                    week_no=week_no,
+                    month=current_date.month
+                )
+                db.add(week)
+                db.flush() # week.id를 사용하기 위해 flush
+
+            # 세션 생성
+            session = SessionModel(
+                id=str(uuid4()),
+                week_id=week.id,
+                date=current_date,
+                title=payload.title,
+                start_time=payload.start_time,
+                end_time=payload.end_time
+            )
+            db.add(session)
+            sessions_created += 1
+        
+        current_date += timedelta(days=1)
+
+    db.commit()
+    return {"status": "ok", "message": f"{sessions_created} sessions created for '{payload.title}'."}
+
 
 @router.post("/schedules/manual", status_code=201)
 def create_manual_schedule(

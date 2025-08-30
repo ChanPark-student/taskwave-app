@@ -61,3 +61,25 @@ class SessionForWeekView(BaseModel):
     color: str | None = "#4A90E2" # 과목별 색상 (향후 구현)
 
     model_config = {"from_attributes": True}
+
+# API: POST /schedules/recurring 를 위한 입력 스키마
+class RecurringScheduleIn(BaseModel):
+    title: str = Field(..., min_length=1, description="일정의 이름 (예: 알고리즘 스터디)")
+    start_date: date
+    end_date: date
+    start_time: time
+    end_time: time
+    weekdays: List[str] = Field(..., min_length=1, description='반복할 요일 목록 (예: ["월", "수"])')
+
+    @model_validator(mode='after')
+    def validate_dates_and_times(self) -> 'RecurringScheduleIn':
+        if self.start_date > self.end_date:
+            raise ValueError("시작 날짜는 종료 날짜보다 이전이어야 합니다.")
+        if self.start_time >= self.end_time:
+            raise ValueError("시작 시간은 종료 시간보다 이전이어야 합니다.")
+        
+        valid_weekdays = {"월", "화", "수", "목", "금", "토", "일"}
+        for day in self.weekdays:
+            if day not in valid_weekdays:
+                raise ValueError(f"'{day}'는 유효한 요일이 아닙니다. (월, 화, 수, 목, 금, 토, 일 중 선택)")
+        return self
