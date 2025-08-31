@@ -1,7 +1,7 @@
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from './context/AuthContext.tsx';
 import Header from './Header.tsx';
-import { FiFolder, FiFileText, FiArrowLeft, FiUpload } from 'react-icons/fi';
+import { FiFolder, FiFileText, FiArrowLeft, FiUpload, FiTrash2 } from 'react-icons/fi';
 import './FileExplorerPage.css';
 import { useRef, useState, ChangeEvent } from 'react';
 import { EP } from './lib/endpoints';
@@ -14,6 +14,7 @@ const FileExplorerPage = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
+  const [deletingFileId, setDeletingFileId] = useState<string | null>(null);
 
   const handleGoBack = () => navigate(-1);
 
@@ -27,7 +28,6 @@ const FileExplorerPage = () => {
 
     const subjectData = fileSystem[subject];
     const dateData = subjectData?.dates?.[date];
-    // 'etc' 폴더의 경우, subjectData는 있지만 dateData는 없을 수 있음. subject_id만 사용.
     if (!subjectData || (!dateData && subject !== 'etc')) {
       setUploadError('업로드에 필요한 ID 정보를 찾을 수 없습니다.');
       return;
@@ -39,23 +39,34 @@ const FileExplorerPage = () => {
     const formData = new FormData();
     formData.append('file', file);
     formData.append('subject_id', subjectData.subject_id);
-    // dateData가 있을 경우에만 session_id를 추가
-    if (dateData?.session_id) {
+    if (dateData?.session_id && dateData.session_id !== 'N/A') {
       formData.append('session_id', dateData.session_id);
     }
     formData.append('name', file.name);
 
     try {
-      await fetchJSON(EP.MATERIALS_UPLOAD, {
-        method: 'POST',
-        body: formData,
-      });
+      await fetchJSON(EP.MATERIALS_UPLOAD, { method: 'POST', body: formData });
       await refreshMe();
     } catch (err) {
       console.error("File upload failed:", err);
       setUploadError('파일 업로드에 실패했습니다.');
     } finally {
       setIsUploading(false);
+    }
+  };
+
+  const handleDeleteFile = async (fileId: string, fileName: string) => {
+    if (window.confirm(`정말로 '${fileName}' 파일을 삭제하시겠습니까?`)) {
+      setDeletingFileId(fileId);
+      try {
+        await fetchJSON(EP.MATERIAL_DELETE(fileId), { method: 'DELETE' });
+        await refreshMe();
+      } catch (err) {
+        alert('파일 삭제에 실패했습니다.');
+        console.error('File deletion failed:', err);
+      } finally {
+        setDeletingFileId(null);
+      }
     }
   };
 
@@ -78,17 +89,27 @@ const FileExplorerPage = () => {
             <div className="empty-folder-message">업로드된 파일이 없습니다.</div>
           ) : (
             files.map(file => (
-              <a href={file.file_url} target="_blank" rel="noopener noreferrer" key={file.id} className="folder-item file-item">
-                <FiFileText />
-                <span>{file.name}</span>
-              </a>
+              <div key={file.id} className="file-item-container">
+                <a href={file.file_url} target="_blank" rel="noopener noreferrer" className="file-link">
+                  <FiFileText />
+                  <span>{file.name}</span>
+                </a>
+                <button 
+                  onClick={() => handleDeleteFile(file.id, file.name)}
+                  disabled={deletingFileId === file.id}
+                  className="delete-file-button"
+                  title={`${file.name} 삭제`}
+                >
+                  {deletingFileId === file.id ? '...' : <FiTrash2 />}
+                </button>
+              </div>
             ))
           )}
         </>
       );
     } else if (subject) {
-      const dates = fileSystem[subject]?.dates || {};
-      const dateKeys = Object.keys(dates);
+      const subjectData = fileSystem[subject];
+      const dateKeys = subjectData ? Object.keys(subjectData.dates) : [];
       if (dateKeys.length === 0) return <div className="empty-folder-message">생성된 날짜 폴더가 없습니다.</div>;
 
       return dateKeys.map(dateKey => (
@@ -107,12 +128,14 @@ const FileExplorerPage = () => {
           </Link>
       ));
 
-      subjectFolders.push(
-        <Link to="/files/etc" key="etc" className="folder-item">
-          <FiFolder />
-          <span>etc</span>
-        </Link>
-      );
+      if (fileSystem['etc']) {
+        subjectFolders.push(
+          <Link to="/files/etc" key="etc" className="folder-item">
+            <FiFolder />
+            <span>etc</span>
+          </Link>
+        );
+      }
 
       return subjectFolders;
     }

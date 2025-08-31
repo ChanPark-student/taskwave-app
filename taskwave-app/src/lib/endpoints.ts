@@ -1,5 +1,3 @@
-// 최종 수정: Gemini (2025-08-31)
-
 export const EP = {
   AUTH_LOGIN: '/api/auth/login',
   AUTH_SIGNUP: '/api/auth/signup',
@@ -21,10 +19,10 @@ export const EP = {
   SUBJECT_WEEKS: (id: number|string) => `/api/subjects/${id}/weeks`,
   WEEK_SESSIONS: (id: number|string) => `/api/weeks/${id}/sessions`,
 
-  // 자료
+  // 자료 (Material)
   MATERIALS_UPLOAD: '/api/materials/upload',
   SUBJECT_MATERIALS: (sid: number|string) => `/api/subjects/${sid}/materials`,
-  MATERIAL: (mid: number|string) => `/api/materials/${mid}`,
+  MATERIAL_DELETE: (mid: number|string) => `/api/materials/${mid}`,
 
   // 업로드
   TIMETABLE_UPLOAD: '/api/timetable/upload',
