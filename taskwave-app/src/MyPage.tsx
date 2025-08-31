@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback, ChangeEvent, FormEvent, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FiUploadCloud, FiChevronUp, FiChevronDown } from 'react-icons/fi';
+import { FiUploadCloud, FiChevronUp, FiChevronDown, FiTrash2 } from 'react-icons/fi';
 import Header from './Header.tsx';
-import { useAuth, User } from './context/AuthContext.tsx';
+import { useAuth, User, FileSystemStructure } from './context/AuthContext.tsx';
 import { fetchJSON } from './lib/http';
 import { EP } from './lib/endpoints';
 import './MyPage.css';
@@ -55,21 +55,7 @@ const WeeklyTimetableView = () => {
   }, [selectedWeek, fetchSessions]);
 
   const subjectColorMap = useMemo(() => {
-    // 가독성 높은 새로운 색상 팔레트 (12가지)
-    const PALETTE = [
-      '#2979FF', // Blue
-      '#00BFA5', // Teal
-      '#651FFF', // Deep Purple
-      '#D50000', // Red
-      '#FF6D00', // Orange
-      '#546E7A', // Slate Gray
-      '#C51162', // Pink
-      '#0097A7', // Cyan
-      '#2E7D32', // Green
-      '#3D5AFE', // Indigo
-      '#D500F9', // Magenta
-      '#6D4C41'  // Brown
-    ];
+    const PALETTE = ['#2979FF', '#00BFA5', '#651FFF', '#D50000', '#FF6D00', '#546E7A', '#C51162', '#0097A7', '#2E7D32', '#3D5AFE', '#D500F9', '#6D4C41'];
     const allSubjects = Object.keys(fileSystem).sort();
     const colorMap: Record<string, string> = {};
     allSubjects.forEach((subject, index) => {
@@ -128,7 +114,7 @@ const WeeklyTimetableView = () => {
                 style={{
                   gridColumn: gridColumn,
                   gridRow: `${gridRowStart} / ${gridRowEnd}`,
-                  backgroundColor: subjectColorMap[session.subject_title] || '#37474F', // 기본색도 어둡게 변경
+                  backgroundColor: subjectColorMap[session.subject_title] || '#37474F',
                 }}
                 title={`${session.subject_title} (${startTimeFormatted}-${endTimeFormatted})`}
               >
@@ -237,6 +223,53 @@ const RecurringScheduleForm = ({ onSave }: { onSave: () => void }) => {
   );
 };
 
+const ScheduleListManager = () => {
+  const { fileSystem, refreshMe } = useAuth();
+  const [isDeleting, setIsDeleting] = useState<string | null>(null); 
+
+  const handleDelete = async (subjectName: string, subjectId: string) => {
+    if (window.confirm(`정말로 '${subjectName}' 일정을 삭제하시겠습니까?
+이 작업은 되돌릴 수 없습니다.`)) {
+      setIsDeleting(subjectId);
+      try {
+        await fetchJSON(EP.SUBJECT_DELETE(subjectId), { method: 'DELETE' });
+        await refreshMe(); 
+      } catch (error) {
+        alert('삭제에 실패했습니다.');
+        console.error(error);
+      } finally {
+        setIsDeleting(null);
+      }
+    }
+  };
+
+  const subjects = Object.entries(fileSystem);
+
+  return (
+    <section className="schedule-list-section">
+      <div className="section-header">
+        <h2>일정 목록 및 관리</h2>
+      </div>
+      <ul className="schedule-list">
+        {subjects.length === 0 && <li className="empty-list">등록된 일정이 없습니다.</li>}
+        {subjects.map(([name, data]) => (
+          <li key={data.subject_id}>
+            <span>{name}</span>
+            <button 
+              onClick={() => handleDelete(name, data.subject_id)} 
+              disabled={isDeleting === data.subject_id}
+              className="delete-button"
+            >
+              {isDeleting === data.subject_id ? '삭제 중...' : <FiTrash2 />}
+            </button>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+};
+
+
 const MyPage = () => {
   const navigate = useNavigate();
   const { user, updateProfile, refreshMe } = useAuth();
@@ -332,6 +365,8 @@ const MyPage = () => {
               </div>
               {showRecurringForm && <RecurringScheduleForm onSave={handleRecurringSave} />}
             </section>
+
+            <ScheduleListManager />
 
             <section className="timetable-upload-section">
               <div className="section-header">
