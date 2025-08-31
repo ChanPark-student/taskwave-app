@@ -91,6 +91,7 @@ const AddEventModal = ({ subjectId, date, onClose, refreshMe }: AddEventModalPro
         </div>
       </div>
     </div>
+  </div>
   );
 };
 
