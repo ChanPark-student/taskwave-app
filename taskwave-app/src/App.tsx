@@ -6,6 +6,7 @@ import MyPage from './MyPage.tsx'
 import FileExplorerPage from './FileExplorerPage.tsx'
 import AdditionalInfoPage from './AdditionalInfoPage.tsx';
 import ManualSchedulePage from './ManualSchedulePage';
+import DateDetailPage from './DateDetailPage';
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
       
       <Route path="/files" element={<FileExplorerPage />} />
       <Route path="/files/:subject" element={<FileExplorerPage />} />
+      <Route path="/files/:subject/:date" element={<DateDetailPage />} />
 
       {/* 추가 정보 페이지 경로 */}
       <Route path="/signup-info" element={<AdditionalInfoPage />} />

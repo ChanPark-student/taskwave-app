@@ -1,10 +1,9 @@
 import Header from './Header.tsx';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useAuth, EventInfo, DateInfo } from './context/AuthContext.tsx';
-import { FiFolder, FiArrowLeft, FiChevronLeft, FiChevronRight, FiCalendar } from 'react-icons/fi';
+import { FiFolder, FiArrowLeft, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 import './FileExplorerPage.css';
 import { useState, useMemo } from 'react';
-import DateDetailModal from './DateDetailModal';
 
 const typeClass = (t: string) => (t || '').toLowerCase();
 
@@ -74,7 +73,6 @@ const CalendarView = ({
         <h2>{subjectName} - {year}년 {month + 1}월</h2>
         <button onClick={goToNextMonth}><FiChevronRight /></button>
       </div>
-       
       <div className="calendar-grid">
         <div className="day-name">월</div>
         <div className="day-name">화</div>
@@ -92,19 +90,12 @@ const CalendarView = ({
 const FileExplorerPage = () => {
   const { subject } = useParams<{ subject: string }>();
   const navigate = useNavigate();
-  const { fileSystem, refreshMe } = useAuth();
-
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const { fileSystem } = useAuth();
 
   const handleDayClick = (dateStr: string) => {
-    setSelectedDate(dateStr);
-    setIsModalOpen(true);
-  };
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-    setSelectedDate(null);
+    if (subject) {
+      navigate(`/files/${subject}/${dateStr}`);
+    }
   };
 
   const renderContent = () => {
@@ -134,42 +125,29 @@ const FileExplorerPage = () => {
     }
   };
 
-  const subjectData = subject ? fileSystem[subject] : null;
-
   return (
-    <>
-      <div className="page-container">
-        <Header />
-        <main className="main-content">
-          <div className="explorer-box">
-            <div className="explorer-header">
-              <button onClick={() => navigate(-1)} className="back-button" title="뒤로가기">
-                <FiArrowLeft />
-              </button>
-              <div className="breadcrumbs">
-                <Link to="/files">내 파일</Link>
-                {subject && (
-                  <>
-                    <span>&gt;</span>
-                    <Link to={`/files/${subject}`}>{subject}</Link>
-                  </>
-                )}
-              </div>
+    <div className="page-container">
+      <Header />
+      <main className="main-content">
+        <div className="explorer-box">
+          <div className="explorer-header">
+            <button onClick={() => navigate(-1)} className="back-button" title="뒤로가기">
+              <FiArrowLeft />
+            </button>
+            <div className="breadcrumbs">
+              <Link to="/files">내 파일</Link>
+              {subject && (
+                <>
+                  <span>&gt;</span>
+                  <Link to={`/files/${subject}`}>{subject}</Link>
+                </>
+              )}
             </div>
-            <div className={subject ? 'grid-container-calendar' : 'grid-container-subjects'}>{renderContent()}</div>
           </div>
-        </main>
-      </div>
-      {isModalOpen && selectedDate && subjectData && (
-        <DateDetailModal
-          subjectName={subject}
-          subjectId={subjectData.subject_id}
-          selectedDate={selectedDate}
-          onClose={handleCloseModal}
-          refreshMe={refreshMe}
-        />
-      )}
-    </>
+          <div className={subject ? 'grid-container-calendar' : 'grid-container-subjects'}>{renderContent()}</div>
+        </div>
+      </main>
+    </div>
   );
 };
 
