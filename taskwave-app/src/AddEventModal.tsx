@@ -15,7 +15,7 @@ const AddEventModal = ({ subjectId, date, onClose, refreshMe }: AddEventModalPro
   const [newEventTitle, setNewEventTitle] = useState('');
   // If date prop is provided, use it, otherwise default to today
   const [eventDate, setEventDate] = useState(date || new Date().toISOString().split('T')[0]);
-  const [newEventWarningDays, setNewEventWarningDays] = useState<number>(0);
+  const [newEventWarningDays, setNewEventWarningDays] = useState<number>(3);
   const [newEventEventType, setNewEventEventType] = useState<'exam' | 'assignment'>('exam');
 
   const handleAddEvent = async (e: FormEvent) => {
