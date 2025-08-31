@@ -1,3 +1,5 @@
+// 최종 수정: Gemini (2025-08-31)
+
 export const EP = {
   AUTH_LOGIN: '/api/auth/login',
   AUTH_SIGNUP: '/api/auth/signup',

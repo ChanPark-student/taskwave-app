@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, ChangeEvent, FormEvent, useMemo } fro
 import { useNavigate } from 'react-router-dom';
 import { FiUploadCloud, FiChevronUp, FiChevronDown, FiTrash2 } from 'react-icons/fi';
 import Header from './Header.tsx';
-import { useAuth, User, FileSystemStructure } from './context/AuthContext.tsx';
+import { useAuth, User } from './context/AuthContext.tsx'; // FileSystemStructure 임포트 제거
 import { fetchJSON } from './lib/http';
 import { EP } from './lib/endpoints';
 import './MyPage.css';
