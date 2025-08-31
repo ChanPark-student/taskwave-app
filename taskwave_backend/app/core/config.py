@@ -2,6 +2,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import field_validator
 from typing import List
 import json
+import os # Import os
 from pathlib import Path
 
 class Settings(BaseSettings):
@@ -12,7 +13,7 @@ class Settings(BaseSettings):
     API_V1_PREFIX: str = "/api"
 
     # DB
-    DATABASE_URL: str = "sqlite:///./taskwave.db"
+    DATABASE_URL: str = os.getenv("DATABASE_URL", "sqlite:///./taskwave.db")
 
     # Security
     SECRET_KEY: str = "change-me"

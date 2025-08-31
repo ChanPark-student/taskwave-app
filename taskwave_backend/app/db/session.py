@@ -17,6 +17,10 @@ DATABASE_URL = _normalize_db_url(DATABASE_URL)
 # sqlite일 때만 특수 connect_args가 필요
 connect_args = {"check_same_thread": False} if DATABASE_URL.startswith("sqlite") else {}
 
+# Add sslmode=require for PostgreSQL connections on Render
+if DATABASE_URL.startswith("postgresql://"):
+    connect_args["sslmode"] = "require"
+
 engine = create_engine(
     DATABASE_URL,
     pool_pre_ping=True,
