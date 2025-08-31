@@ -38,7 +38,8 @@ const AddEventModal = ({ subjectId, date, onClose, refreshMe }: AddEventModalPro
   };
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
+    <div className="add-event-modal-component">
+      <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content" onClick={e => e.stopPropagation()}>
         <div className="modal-header">
           <h3>새 이벤트 추가</h3>

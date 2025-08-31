@@ -1,6 +1,6 @@
 /* src/AddEventModal.css */
 
-.modal-overlay {
+.add-event-modal-component .modal-overlay {
     position: fixed;
     top: 0;
     left: 0;
@@ -13,7 +13,7 @@
     z-index: 1000;
 }
 
-.modal-content {
+.add-event-modal-component .modal-content {
     background: white;
     padding: 25px;
     border-radius: 8px;
@@ -23,7 +23,7 @@
     position: relative;
 }
 
-.modal-header {
+.add-event-modal-component .modal-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -32,12 +32,12 @@
     margin-bottom: 20px;
 }
 
-.modal-header h3 {
+.add-event-modal-component .modal-header h3 {
     margin: 0;
     font-size: 1.3em;
 }
 
-.close-button {
+.add-event-modal-component .close-button {
     background: none;
     border: none;
     font-size: 1.5em;
@@ -45,13 +45,13 @@
     color: #888;
 }
 
-.add-event-buttons {
+.add-event-modal-component .add-event-buttons {
     display: flex;
     gap: 10px;
     margin-bottom: 20px;
 }
 
-.add-event-buttons button {
+.add-event-modal-component .add-event-buttons button {
     flex: 1;
     padding: 10px;
     border: 1px solid #ccc;
@@ -61,30 +61,30 @@
     transition: background-color 0.2s, border-color 0.2s;
 }
 
-.add-event-buttons button.active {
+.add-event-modal-component .add-event-buttons button.active {
     background-color: #007bff;
     color: white;
     border-color: #007bff;
 }
 
-.add-event-form h4 {
+.add-event-modal-component .add-event-form h4 {
     margin-top: 0;
     margin-bottom: 15px;
     color: #333;
 }
 
-.form-group {
+.add-event-modal-component .form-group {
     margin-bottom: 15px;
 }
 
-.form-group label {
+.add-event-modal-component .form-group label {
     display: block;
     margin-bottom: 5px;
     font-weight: bold;
     color: #555;
 }
 
-.form-group input {
+.add-event-modal-component .form-group input {
     width: 100%;
     padding: 8px;
     border: 1px solid #ccc;
@@ -92,27 +92,27 @@
     box-sizing: border-box;
 }
 
-.form-actions {
+.add-event-modal-component .form-actions {
     display: flex;
     justify-content: flex-end;
     gap: 10px;
     margin-top: 20px;
 }
 
-.form-actions button {
+.add-event-modal-component .form-actions button {
     padding: 8px 15px;
     border-radius: 5px;
     border: 1px solid transparent;
     cursor: pointer;
 }
 
-.form-actions button[type="submit"] {
+.add-event-modal-component .form-actions button[type="submit"] {
     background-color: #28a745;
     color: white;
     border-color: #28a745;
 }
 
-.form-actions button[type="button"] {
+.add-event-modal-component .form-actions button[type="button"] {
     background-color: #6c757d;
     color: white;
     border-color: #6c757d;

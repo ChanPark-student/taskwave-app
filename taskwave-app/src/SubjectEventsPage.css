@@ -1,10 +1,10 @@
 /* src/SubjectEventsPage.css */
 
-.event-list-container {
+.subject-events-page .event-list-container {
     padding: 20px;
 }
 
-.event-list-item {
+.subject-events-page .event-list-item {
     display: grid;
     grid-template-columns: 100px 1fr auto;
     align-items: center;
@@ -18,12 +18,12 @@
     transition: transform 0.2s, box-shadow 0.2s;
 }
 
-.event-list-item:hover {
+.subject-events-page .event-list-item:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 
-.event-d-day {
+.subject-events-page .event-d-day {
     font-size: 1.2em;
     font-weight: bold;
     color: #007bff;
@@ -32,37 +32,37 @@
     gap: 8px;
 }
 
-.event-d-day .fi-alert-triangle {
+.subject-events-page .event-d-day .fi-alert-triangle {
     color: #dc3545;
 }
 
-.event-d-day .fi-check-circle {
+.subject-events-page .event-d-day .fi-check-circle {
     color: #28a745;
 }
 
-.event-details {
+.subject-events-page .event-details {
     display: flex;
     flex-direction: column;
 }
 
-.event-title {
+.subject-events-page .event-title {
     font-size: 1.1em;
     font-weight: 500;
     color: #333;
 }
 
-.event-type {
+.subject-events-page .event-type {
     font-size: 0.9em;
     color: #888;
 }
 
-.event-date {
+.subject-events-page .event-date {
     font-size: 0.9em;
     color: #666;
     justify-self: flex-end;
 }
 
-.empty-message-box {
+.subject-events-page .empty-message-box {
     text-align: center;
     padding: 40px;
     color: #888;

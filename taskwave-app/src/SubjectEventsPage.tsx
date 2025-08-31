@@ -54,7 +54,7 @@ const SubjectEventsPage = () => {
   }
 
   return (
-    <div className="page-container">
+    <div className="page-container subject-events-page">
       <Header />
       <main className="main-content">
         <div className="explorer-box" style={{ maxWidth: '800px', margin: 'auto' }}>
