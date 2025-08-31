@@ -369,3 +369,7 @@
 .add-event-button:hover {
     background-color: #218838;
 }
+.calendar-day.is-warning-day {
+    background-color: #ffe0b2; /* Light orange or similar */
+    border: 1px solid #ff9800;
+}

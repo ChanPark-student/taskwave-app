@@ -22,6 +22,36 @@ const CalendarView = ({
   const [currentDate, setCurrentDate] = useState(new Date());
   const scheduledDates = useMemo(() => new Set(Object.keys(dates)), [dates]);
 
+  const allEvents = useMemo(() => {
+    const eventsList: EventInfo[] = [];
+    Object.values(dates).forEach(dateInfo => {
+      if (dateInfo?.events) {
+        eventsList.push(...dateInfo.events);
+      }
+    });
+    return eventsList;
+  }, [dates]);
+
+  const warningDaysMap = useMemo(() => {
+    const map = new Map<string, EventInfo[]>(); // Map<dateStr, List<EventInfo>>
+    allEvents.forEach(event => {
+      const eventDate = new Date(event.date); // event.date is a string like "YYYY-MM-DD"
+      const warningDays = event.warning_days ?? 0; // Use 0 if warning_days is null/undefined
+
+      for (let i = 0; i <= warningDays; i++) {
+        const currentWarningDate = new Date(eventDate);
+        currentWarningDate.setDate(eventDate.getDate() - i);
+        const warningDateStr = currentWarningDate.toISOString().split('T')[0];
+
+        if (!map.has(warningDateStr)) {
+          map.set(warningDateStr, []);
+        }
+        map.get(warningDateStr)?.push(event);
+      }
+    });
+    return map;
+  }, [allEvents]);
+
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
 
@@ -40,7 +70,13 @@ const CalendarView = ({
     const dateInfo = dates[dateStr];
     const hasSchedule = scheduledDates.has(dateStr);
     const hasFiles = hasSchedule && (dateInfo?.files?.length ?? 0) > 0;
-    const events: EventInfo[] = hasSchedule ? dateInfo?.events || [] : [];
+    
+    // Get events for this specific date AND events whose warning period includes this date
+    const eventsOnThisDay: EventInfo[] = hasSchedule ? dateInfo?.events || [] : [];
+    const eventsWithWarningOnThisDay: EventInfo[] = warningDaysMap.get(dateStr) || [];
+
+    // Combine and deduplicate events for display
+    const allRelevantEvents = Array.from(new Set([...eventsOnThisDay, ...eventsWithWarningOnThisDay]));
 
     let dayClassName = 'calendar-day';
     if (hasSchedule) {
@@ -48,12 +84,17 @@ const CalendarView = ({
       dayClassName += hasFiles ? ' has-files' : ' no-files';
     }
 
+    // Add class for warning days
+    if (eventsWithWarningOnThisDay.length > 0) {
+      dayClassName += ' is-warning-day';
+    }
+
     calendarDays.push(
       <div key={dateStr} className={dayClassName} onClick={() => onDayClick(dateStr)}>
         <div className="day-link">
           <span className="day-number">{day}</span>
           <div className="event-markers">
-            {events.map((event: EventInfo) => (
+            {allRelevantEvents.map((event: EventInfo) => (
               <div
                 key={event.id}
                 className={`event-dot ${typeClass(event.event_type as unknown as string)}`}
