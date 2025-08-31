@@ -1,0 +1,94 @@
+/* src/SubjectEventsPage.css */
+
+.event-list-container {
+    padding: 20px;
+}
+
+.event-list-item {
+    display: grid;
+    grid-template-columns: 100px 1fr auto;
+    align-items: center;
+    gap: 20px;
+    padding: 15px;
+    background-color: #fff;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.event-list-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.event-d-day {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #007bff;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.event-d-day .fi-alert-triangle {
+    color: #dc3545;
+}
+
+.event-d-day .fi-check-circle {
+    color: #28a745;
+}
+
+.event-details {
+    display: flex;
+    flex-direction: column;
+}
+
+.event-title {
+    font-size: 1.1em;
+    font-weight: 500;
+    color: #333;
+}
+
+.event-type {
+    font-size: 0.9em;
+    color: #888;
+}
+
+.event-date {
+    font-size: 0.9em;
+    color: #666;
+    justify-self: flex-end;
+}
+
+.empty-message-box {
+    text-align: center;
+    padding: 40px;
+    color: #888;
+    font-size: 1.1em;
+}
+
+/* Styles for the button in FileExplorerPage to link here */
+.view-events-button {
+    background-color: #17a2b8;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9em;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 15px;
+}
+
+.view-events-button:hover {
+    background-color: #138496;
+}
+
+.calendar-actions {
+    padding: 0 20px;
+    text-align: right;
+}

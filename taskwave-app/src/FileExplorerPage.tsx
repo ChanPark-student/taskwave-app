@@ -1,9 +1,10 @@
 import Header from './Header.tsx';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useAuth, EventInfo, DateInfo } from './context/AuthContext.tsx';
-import { FiFolder, FiArrowLeft, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
+import { FiFolder, FiArrowLeft, FiChevronLeft, FiChevronRight, FiCalendar } from 'react-icons/fi';
 import './FileExplorerPage.css';
 import { useState, useMemo } from 'react';
+import AddEventModal from './AddEventModal';
 
 const typeClass = (t: string) => (t || '').toLowerCase();
 
@@ -11,10 +12,12 @@ const CalendarView = ({
   subjectName,
   dates,
   onDayClick,
+  onViewAllEventsClick,
 }: {
   subjectName: string;
   dates: Record<string, DateInfo>;
   onDayClick: (date: string) => void;
+  onViewAllEventsClick: () => void;
 }) => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const scheduledDates = useMemo(() => new Set(Object.keys(dates)), [dates]);
@@ -46,7 +49,7 @@ const CalendarView = ({
     }
 
     calendarDays.push(
-      <div key={dateStr} className={dayClassName} onClick={() => hasSchedule && onDayClick(dateStr)}>
+      <div key={dateStr} className={dayClassName} onClick={() => onDayClick(dateStr)}>
         <div className="day-link">
           <span className="day-number">{day}</span>
           <div className="event-markers">
@@ -69,14 +72,13 @@ const CalendarView = ({
   return (
     <div className="calendar-container">
       <div className="calendar-header">
-        <button onClick={goToPreviousMonth}>
-          <FiChevronLeft />
-        </button>
-        <h2>
-          {subjectName} - {year}년 {month + 1}월
-        </h2>
-        <button onClick={goToNextMonth}>
-          <FiChevronRight />
+        <button onClick={goToPreviousMonth}><FiChevronLeft /></button>
+        <h2>{subjectName} - {year}년 {month + 1}월</h2>
+        <button onClick={goToNextMonth}><FiChevronRight /></button>
+      </div>
+       <div className="calendar-actions">
+        <button onClick={onViewAllEventsClick} className="view-events-button">
+          <FiCalendar /> 전체 이벤트 보기
         </button>
       </div>
       <div className="calendar-grid">
@@ -96,11 +98,24 @@ const CalendarView = ({
 const FileExplorerPage = () => {
   const { subject } = useParams<{ subject: string }>();
   const navigate = useNavigate();
-  const { fileSystem } = useAuth();
+  const { fileSystem, refreshMe } = useAuth();
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
 
   const handleDayClick = (dateStr: string) => {
-    if (subject) {
-        navigate(`/files/${subject}/${dateStr}`);
+    setSelectedDate(dateStr);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedDate(null);
+  };
+
+  const handleViewAllEvents = () => {
+    if(subject) {
+      navigate(`/files/${subject}/events`);
     }
   };
 
@@ -108,7 +123,7 @@ const FileExplorerPage = () => {
     if (subject) {
       const subjectData = fileSystem[subject];
       if (!subjectData) return <div className="empty-folder-message">과목 정보를 찾을 수 없습니다.</div>;
-      return <CalendarView subjectName={subject} dates={subjectData.dates} onDayClick={handleDayClick} />;
+      return <CalendarView subjectName={subject} dates={subjectData.dates} onDayClick={handleDayClick} onViewAllEventsClick={handleViewAllEvents} />;
     } else {
       const subjectFolders: JSX.Element[] = Object.keys(fileSystem)
         .filter(name => name.toLowerCase() !== 'etc')
@@ -131,29 +146,41 @@ const FileExplorerPage = () => {
     }
   };
 
+  const subjectData = subject ? fileSystem[subject] : null;
+
   return (
-    <div className="page-container">
-      <Header />
-      <main className="main-content">
-        <div className="explorer-box">
-          <div className="explorer-header">
-            <button onClick={() => navigate(-1)} className="back-button" title="뒤로가기">
-              <FiArrowLeft />
-            </button>
-            <div className="breadcrumbs">
-              <Link to="/files">내 파일</Link>
-              {subject && (
-                <>
-                  <span>&gt;</span>
-                  <Link to={`/files/${subject}`}>{subject}</Link>
-                </>
-              )}
+    <>
+      <div className="page-container">
+        <Header />
+        <main className="main-content">
+          <div className="explorer-box">
+            <div className="explorer-header">
+              <button onClick={() => navigate(-1)} className="back-button" title="뒤로가기">
+                <FiArrowLeft />
+              </button>
+              <div className="breadcrumbs">
+                <Link to="/files">내 파일</Link>
+                {subject && (
+                  <>
+                    <span>&gt;</span>
+                    <Link to={`/files/${subject}`}>{subject}</Link>
+                  </>
+                )}
+              </div>
             </div>
+            <div className={subject ? 'grid-container-calendar' : 'grid-container-subjects'}>{renderContent()}</div>
           </div>
-          <div className={subject ? 'grid-container-calendar' : 'grid-container-subjects'}>{renderContent()}</div>
-        </div>
-      </main>
-    </div>
+        </main>
+      </div>
+      {isModalOpen && selectedDate && subjectData && (
+        <AddEventModal
+          subjectId={subjectData.subject_id}
+          date={selectedDate}
+          onClose={handleCloseModal}
+          refreshMe={refreshMe}
+        />
+      )}
+    </>
   );
 };
 

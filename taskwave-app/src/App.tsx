@@ -6,7 +6,7 @@ import MyPage from './MyPage.tsx'
 import FileExplorerPage from './FileExplorerPage.tsx'
 import AdditionalInfoPage from './AdditionalInfoPage.tsx';
 import ManualSchedulePage from './ManualSchedulePage';
-import DateDetailPage from './DateDetailPage';
+import SubjectEventsPage from './SubjectEventsPage';
 
 function App() {
   return (
@@ -16,15 +16,15 @@ function App() {
       <Route path="/signup" element={<SignupPage />} />
       <Route path="/mypage" element={<MyPage />} />
       
-      {/* 파일 탐색기 라우팅을 새로운 구조로 수정 */}
+      {/* 파일 탐색기 및 이벤트 라우팅 */}
       <Route path="/files" element={<FileExplorerPage />} />
       <Route path="/files/:subject" element={<FileExplorerPage />} />
-      <Route path="/files/:subject/:date" element={<DateDetailPage />} />
+      <Route path="/files/:subject/events" element={<SubjectEventsPage />} />
 
-      {/* 2. 추가 정보 페이지 경로 추가 */}
+      {/* 추가 정보 페이지 경로 */}
       <Route path="/signup-info" element={<AdditionalInfoPage />} />
 
-      {/* 3. 시간표 수동 입력 페이지 경로 추가 */}
+      {/* 시간표 수동 입력 페이지 경로 */}
       <Route path="/add-schedule" element={<ManualSchedulePage />} />
     </Routes>
   )

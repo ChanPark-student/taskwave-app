@@ -2,7 +2,7 @@ import { useState, FormEvent } from 'react';
 import { EP } from './lib/endpoints';
 import { fetchJSON } from './lib/http';
 import { FiX } from 'react-icons/fi';
-import './FileExplorerPage.css'; // Reuse styles
+import './AddEventModal.css';
 
 interface AddEventModalProps {
   subjectId: string;
