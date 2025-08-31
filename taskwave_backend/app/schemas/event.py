@@ -21,5 +21,7 @@ class EventUpdate(EventBase):
 class EventOut(EventBase):
     id: str
     subject_id: str
+    # Explicitly define date as required for EventOut, as it comes from nullable=False ORM field
+    date: date # <--- Change this from Optional[date] to date
 
     model_config = {"from_attributes": True}
