@@ -57,44 +57,8 @@
   color: #adb5bd;
 }
 
-.grid-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-  gap: 20px;
-}
-
-.folder-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 20px;
-  border-radius: 8px;
-  background-color: #f8f9fa;
-  border: 1px solid #f1f3f5;
-  cursor: pointer;
-  transition: all 0.2s ease-in-out;
-  text-decoration: none;
-  color: #343a40;
-  font-weight: 500;
-  text-align: center;
-}
-
-.folder-item:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
-  border-color: #dee2e6;
-}
-
-.folder-item svg {
-  font-size: 48px;
-  color: #868e96;
-}
-
-.folder-item span {
-  font-size: 14px;
-  word-break: break-word;
+.grid-container-calendar {
+  padding: 8px;
 }
 
 .empty-folder-message {
@@ -105,10 +69,6 @@
 }
 
 /* --- Calendar View Styles --- */
-.grid-container-calendar {
-  padding: 8px;
-}
-
 .calendar-container {
   width: 100%;
 }
@@ -160,7 +120,7 @@
   border: 1px solid #f1f3f5;
   font-size: 14px;
   color: #495057;
-  transition: background-color 0.2s;
+  transition: background-color 0.2s, transform 0.2s;
 }
 
 .calendar-day.empty {
@@ -169,14 +129,30 @@
 }
 
 .calendar-day.has-schedule {
-  background-color: #e8f5e9; /* Light green tint */
+  cursor: pointer;
+}
+
+/* 파일이 없는 날짜 */
+.calendar-day.has-schedule.no-files {
+  background-color: #f1f3f5; /* 연한 회색 */
+  color: #868e96;
+  border: 1px solid #e9ecef;
+}
+
+.calendar-day.has-schedule.no-files:hover {
+  background-color: #e9ecef;
+  transform: scale(1.05);
+}
+
+/* 파일이 있는 날짜 */
+.calendar-day.has-schedule.has-files {
+  background-color: #e8f5e9; /* 연한 녹색 */
   font-weight: 600;
   color: #2b8a3e;
-  cursor: pointer;
   border: 1px solid #a9e34b;
 }
 
-.calendar-day.has-schedule:hover {
+.calendar-day.has-schedule.has-files:hover {
   background-color: #d3f9d8;
   transform: scale(1.05);
 }

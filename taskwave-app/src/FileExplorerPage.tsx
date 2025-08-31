@@ -1,5 +1,5 @@
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { useAuth } from './context/AuthContext.tsx';
+import { useAuth, FileInfo } from './context/AuthContext.tsx';
 import Header from './Header.tsx';
 import { FiFolder, FiFileText, FiArrowLeft, FiUpload, FiChevronLeft, FiChevronRight, FiTrash2 } from 'react-icons/fi';
 import './FileExplorerPage.css';
@@ -27,13 +27,21 @@ const CalendarView = ({ subjectName, dates }: { subjectName: string, dates: Reco
   for (let day = 1; day <= daysInMonth; day++) {
     const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
     const hasSchedule = scheduledDates.has(dateStr);
+    const hasFiles = hasSchedule && dates[dateStr]?.files?.length > 0;
+
+    let dayClassName = 'calendar-day';
+    if (hasSchedule) {
+      dayClassName += ' has-schedule';
+      dayClassName += hasFiles ? ' has-files' : ' no-files';
+    }
+
     calendarDays.push(
       hasSchedule ? (
-        <Link to={`/files/${subjectName}/${dateStr}`} key={dateStr} className="calendar-day has-schedule">
+        <Link to={`/files/${subjectName}/${dateStr}`} key={dateStr} className={dayClassName}>
           {day}
         </Link>
       ) : (
-        <div key={dateStr} className="calendar-day">
+        <div key={dateStr} className={dayClassName}>
           {day}
         </div>
       )
@@ -143,7 +151,7 @@ const FileExplorerPage = () => {
           {files.length === 0 && !isUploading ? (
             <div className="empty-folder-message">업로드된 파일이 없습니다.</div>
           ) : (
-            files.map(file => (
+            files.map((file: FileInfo) => (
               <div key={file.id} className="file-item-container">
                 <a href={file.file_url} target="_blank" rel="noopener noreferrer" className="file-link">
                   <FiFileText />
@@ -208,7 +216,7 @@ const FileExplorerPage = () => {
             </button>
             <Breadcrumbs />
           </div>
-          <div className="grid-container-calendar"> {/* 클래스명 변경 */}
+          <div className="grid-container-calendar"> 
             {renderContent()}
           </div>
         </div>
