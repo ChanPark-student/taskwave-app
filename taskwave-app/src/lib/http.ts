@@ -62,5 +62,7 @@ export type FileInfo = {
   filename: string;
   filepath: string;
   is_dir: boolean;
+  file_url: string; 
+  name: string;     
   children?: FileInfo[];
 };

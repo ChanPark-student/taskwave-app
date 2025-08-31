@@ -190,7 +190,7 @@ const FileExplorerPage = () => {
                   <span>{file.name}</span>
                 </a>
                 {/* Add delete button for files in etc folder */}
-                <button onClick={() => handleDeleteFile(file.id)} className="delete-item-button"><FiTrash2 /></button>
+                <button onClick={() => handleDeleteFile(file.id.toString())} className="delete-item-button"><FiTrash2 /></button>
               </div>
             ))}
           </div>
