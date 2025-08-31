@@ -1,0 +1,97 @@
+/* src/DateDetailPage.css */
+
+.date-detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  padding: 20px;
+}
+
+.management-panel {
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+.panel-header h4 {
+  margin: 0;
+  font-size: 1.2em;
+}
+
+.panel-button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.9em;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.panel-button:hover {
+  background-color: #0056b3;
+}
+
+.item-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.list-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  background-color: #fff;
+  border-radius: 5px;
+  border: 1px solid #eee;
+  transition: box-shadow 0.2s;
+}
+
+.list-item:hover {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.item-link {
+  color: #333;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.item-link:hover {
+  text-decoration: underline;
+}
+
+.delete-item-button {
+  background: none;
+  border: none;
+  color: #dc3545;
+  cursor: pointer;
+  font-size: 1.2em;
+}
+
+.delete-item-button:hover {
+  color: #a71d2a;
+}
+
+.empty-message-box {
+    text-align: center;
+    padding: 20px;
+    color: #888;
+}
