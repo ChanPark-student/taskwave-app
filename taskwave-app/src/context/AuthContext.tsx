@@ -4,6 +4,15 @@ import { fetchJSON, loadToken, clearToken } from '../lib/http';
 import { EP } from '../lib/endpoints';
 
 // --- 새로운 파일 시스템 타입 정의 ---
+// Event 타입을 백엔드 스키마와 일치시킴
+export interface EventInfo {
+  id: string;
+  title: string;
+  event_type: 'exam' | 'assignment';
+  date: string;
+  warning_days: number;
+}
+
 export interface FileInfo {
   id: string;
   name: string;
@@ -13,8 +22,9 @@ export interface FileInfo {
 }
 
 export interface DateInfo {
-  session_id: string;
+  session_id: string | null;
   files: FileInfo[];
+  events: EventInfo[]; // 단일 객체에서 리스트(배열)로 변경
 }
 
 export interface SubjectInfo {

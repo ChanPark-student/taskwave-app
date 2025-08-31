@@ -19,10 +19,14 @@ export const EP = {
   SUBJECT_WEEKS: (id: number|string) => `/api/subjects/${id}/weeks`,
   WEEK_SESSIONS: (id: number|string) => `/api/weeks/${id}/sessions`,
 
-  // 자료 (Material)
+  // 자료
   MATERIALS_UPLOAD: '/api/materials/upload',
   SUBJECT_MATERIALS: (sid: number|string) => `/api/subjects/${sid}/materials`,
   MATERIAL_DELETE: (mid: number|string) => `/api/materials/${mid}`,
+
+  // 이벤트 (시험/과제)
+  EVENTS: '/api/events',
+  EVENT_DELETE: (eid: number|string) => `/api/events/${eid}`,
 
   // 업로드
   TIMETABLE_UPLOAD: '/api/timetable/upload',

@@ -57,14 +57,12 @@
   color: #adb5bd;
 }
 
-/* --- 최상위 과목 폴더 그리드 --- */
 .grid-container-subjects {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
   gap: 20px;
 }
 
-/* --- 캘린더 / 파일 목록 컨테이너 --- */
 .grid-container-calendar {
   padding: 8px;
 }
@@ -163,6 +161,7 @@
   font-size: 14px;
   color: #495057;
   transition: background-color 0.2s, transform 0.2s;
+  position: relative; /* For event markers */
 }
 
 .calendar-day.empty {
@@ -170,12 +169,25 @@
   border: none;
 }
 
+.day-link {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  text-decoration: none;
+  color: inherit;
+}
+
+.day-number {
+  padding-bottom: 4px;
+}
+
 .calendar-day.has-schedule {
   cursor: pointer;
 }
 
+/* 파일이 없는 날짜 */
 .calendar-day.has-schedule.no-files {
-  background-color: #f1f3f5;
+  background-color: #f1f3f5; /* 연한 회색 */
   color: #868e96;
   border: 1px solid #e9ecef;
 }
@@ -185,8 +197,9 @@
   transform: scale(1.05);
 }
 
+/* 파일이 있는 날짜 */
 .calendar-day.has-schedule.has-files {
-  background-color: #e8f5e9;
+  background-color: #e8f5e9; /* 연한 녹색 */
   font-weight: 600;
   color: #2b8a3e;
   border: 1px solid #a9e34b;
@@ -195,6 +208,33 @@
 .calendar-day.has-schedule.has-files:hover {
   background-color: #d3f9d8;
   transform: scale(1.05);
+}
+
+.event-markers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: auto;
+  padding-top: 4px;
+  position: absolute;
+  bottom: 8px;
+  left: 8px;
+}
+
+.event-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.event-dot.exam {
+  background-color: #F8E71C;
+  border: 1px solid #F5A623;
+}
+
+.event-dot.assignment {
+  background-color: #4A90E2;
+  border: 1px solid #007BFF;
 }
 
 
@@ -265,6 +305,7 @@
 }
 
 .upload-button-container {
+  grid-column: 1 / -1;
   margin-bottom: 16px;
   padding-bottom: 16px;
   border-bottom: 1px solid #e9ecef;
@@ -295,6 +336,7 @@
 }
 
 .upload-error {
+  grid-column: 1 / -1;
   color: #d9534f;
   margin-top: 8px;
   padding: 8px;

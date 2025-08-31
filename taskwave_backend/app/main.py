@@ -17,6 +17,7 @@ from app.routers.materials import router as materials_router
 from app.routers.uploads import router as uploads_router
 from app.routers.schedules import router as schedules_router
 from app.routers.files import router as files_router
+from app.routers.events import router as events_router # 이벤트 라우터 추가
 from app.routers import misc
 from app.db.session import engine
 from app.db.base import Base
@@ -24,32 +25,18 @@ from app.db.base import Base
 app = FastAPI()
 
 # --- 정적 파일 마운트 --- #
-# MEDIA_ROOT 디렉토리가 없으면 생성
 media_path = Path(settings.MEDIA_ROOT)
 media_path.mkdir(parents=True, exist_ok=True)
-
-# /media URL 경로를 실제 media_path 디렉토리와 연결
 app.mount("/media", StaticFiles(directory=media_path), name="media")
 
 
 def _parse_origins(val: Any) -> List[str]:
-    """
-    BACKEND_CORS_ORIGINS를 유연하게 파싱:
-    - 리스트/튜플 그대로
-    - JSON 문자열  '["https://a","https://b"]'
-    - 콤마 문자열  'https://a,https://b'
-    - 단일 문자열  'https://a'
-    """
     origins: List[str] = []
     if not val:
         return origins
-
     if isinstance(val, (list, tuple)):
-        origins = [str(s).strip() for s in val if str(s).strip()]
-        return origins
-
+        return [str(s).strip() for s in val if str(s).strip()]
     if isinstance(val, str):
-        # JSON 배열 시도
         try:
             parsed = json.loads(val)
             if isinstance(parsed, (list, tuple)):
@@ -58,25 +45,15 @@ def _parse_origins(val: Any) -> List[str]:
                 s = parsed.strip()
                 return [s] if s else []
         except Exception:
-            # 콤마 구분
             return [s.strip() for s in val.split(",") if s.strip()]
-
-    # 기타 타입 방어
     return [str(val).strip()] if str(val).strip() else []
-
 
 # ---- CORS allow_origins 구성 ----
 origins: List[str] = _parse_origins(getattr(settings, "BACKEND_CORS_ORIGINS", None))
-
-# FRONTEND_URL 단일 값도 허용
 if not origins and os.getenv("FRONTEND_URL"):
     origins = _parse_origins(os.environ["FRONTEND_URL"])
-
-# 기본값(개발 환경)
 if not origins:
     origins = ["http://localhost:5173", "https://taskwave-app.onrender.com"]
-
-# Add the deployed frontend URL for convenience
 if "https://taskwave-app.onrender.com" not in origins:
     origins.append("https://taskwave-app.onrender.com")
 
@@ -85,17 +62,16 @@ logging.getLogger("uvicorn.error").info("CORS allow_origins=%s", origins)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
-    allow_credentials=True,   # 크리덴셜 필요 시 True (와일드카드 '*' 불가)
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
 @app.on_event("startup")
 def _startup_create_tables():
-    # alembic이 실패하더라도 최소한 필요한 테이블은 생성
     Base.metadata.create_all(bind=engine)
     
-# 라우터: 각 라우터 안에 /auth 등 개별 prefix가 이미 있으므로 여기서는 공통 "/api"만
+# 라우터
 app.include_router(auth_router, prefix="/api")
 app.include_router(users_router, prefix="/api")
 app.include_router(subjects_router, prefix="/api")
@@ -103,6 +79,7 @@ app.include_router(materials_router, prefix="/api")
 app.include_router(schedules_router, prefix="/api")
 app.include_router(uploads_router, prefix="/api")
 app.include_router(files_router, prefix="/api")
+app.include_router(events_router, prefix="/api") # 이벤트 라우터 추가
 app.include_router(misc.router, prefix="/api")
 
 @app.get("/api/health", tags=["health"])

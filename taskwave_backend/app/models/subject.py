@@ -11,3 +11,4 @@ class Subject(Base):
 
     user = relationship("User", back_populates="subjects")
     weeks = relationship("Week", back_populates="subject", cascade="all, delete-orphan")
+    events = relationship("Event", back_populates="subject", cascade="all, delete-orphan") # 이벤트 관계 추가
