@@ -344,3 +344,28 @@
   border-radius: 4px;
   text-align: center;
 }
+
+.calendar-actions {
+    padding: 0 20px;
+    text-align: right;
+    margin-top: -15px; /* Adjust to align with calendar header */
+    margin-bottom: 15px;
+}
+
+.add-event-button {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9em;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: background-color 0.2s;
+}
+
+.add-event-button:hover {
+    background-color: #218838;
+}

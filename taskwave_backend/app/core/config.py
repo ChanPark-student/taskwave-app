@@ -2,6 +2,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import field_validator
 from typing import List
 import json
+from pathlib import Path
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
@@ -41,7 +42,7 @@ class Settings(BaseSettings):
 
     # Storage
     STORAGE_BACKEND: str = "local"   # "local" 또는 "s3"
-    MEDIA_ROOT: str = "./media"
+    MEDIA_ROOT: str = str(Path(__file__).parent.parent.parent / "media")
 
     # (선택) S3 전환용
     S3_BUCKET: str | None = None

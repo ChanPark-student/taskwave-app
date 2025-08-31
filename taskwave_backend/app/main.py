@@ -7,6 +7,7 @@ from pathlib import Path
 import os
 import json
 import logging
+import sys # Import sys for stderr
 from typing import Any, List
 
 from app.core.config import settings
@@ -25,9 +26,13 @@ from app.db.base import Base
 app = FastAPI()
 
 # --- 정적 파일 마운트 --- #
-media_path = Path(settings.MEDIA_ROOT)
-media_path.mkdir(parents=True, exist_ok=True)
-app.mount("/media", StaticFiles(directory=media_path), name="media")
+try:
+    media_path = Path(settings.MEDIA_ROOT)
+    media_path.mkdir(parents=True, exist_ok=True)
+    app.mount("/media", StaticFiles(directory=media_path), name="media")
+except Exception as e:
+    print(f"Error creating or mounting media directory: {e}", file=sys.stderr)
+    raise # Re-raise to ensure the application doesn't start in a broken state
 
 
 def _parse_origins(val: Any) -> List[str]:

@@ -6,13 +6,15 @@ import './AddEventModal.css';
 
 interface AddEventModalProps {
   subjectId: string;
-  date: string;
+  date?: string; // Make date optional
   onClose: () => void;
   refreshMe: () => void;
 }
 
 const AddEventModal = ({ subjectId, date, onClose, refreshMe }: AddEventModalProps) => {
   const [newEventTitle, setNewEventTitle] = useState('');
+  // If date prop is provided, use it, otherwise default to today
+  const [eventDate, setEventDate] = useState(date || new Date().toISOString().split('T')[0]);
   const [newEventWarningDays, setNewEventWarningDays] = useState<number>(0);
   const [newEventEventType, setNewEventEventType] = useState<'exam' | 'assignment'>('exam');
 
@@ -25,7 +27,7 @@ const AddEventModal = ({ subjectId, date, onClose, refreshMe }: AddEventModalPro
           subject_id: subjectId,
           title: newEventTitle,
           event_type: newEventEventType,
-          date,
+          date: eventDate, // Use state instead of prop
           warning_days: Number.isFinite(newEventWarningDays) ? newEventWarningDays : 0,
         }),
       });
@@ -67,6 +69,16 @@ const AddEventModal = ({ subjectId, date, onClose, refreshMe }: AddEventModalPro
                   type="text"
                   value={newEventTitle}
                   onChange={e => setNewEventTitle(e.target.value)}
+                  required
+                  />
+              </div>
+              <div className="form-group">
+                  <label htmlFor="eventDate">날짜:</label>
+                  <input
+                  id="eventDate"
+                  type="date"
+                  value={eventDate}
+                  onChange={e => setEventDate(e.target.value)}
                   required
                   />
               </div>
