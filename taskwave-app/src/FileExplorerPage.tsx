@@ -139,7 +139,7 @@ const FileExplorerPage = () => {
       const files = dateInfo?.files || [];
 
       return (
-        <>
+        <div className="file-list-container">
           <div className="upload-button-container">
             <button onClick={handleUploadClick} disabled={isUploading} className="upload-button-in-view">
               <FiUpload />
@@ -168,7 +168,7 @@ const FileExplorerPage = () => {
               </div>
             ))
           )}
-        </>
+        </div>
       );
     } else if (subject) {
       const subjectData = fileSystem[subject];
@@ -200,10 +200,13 @@ const FileExplorerPage = () => {
   const Breadcrumbs = () => (
     <div className="breadcrumbs">
       <Link to="/files">내 파일</Link>
-      {subject && <><span>&gt;</span><Link to={`/files/${subject}`}>{subject}</Link></>}
-      {date && <><span>&gt;</span><span>{date}</span></>}
+      {subject && <><span >&gt;</span><Link to={`/files/${subject}`}>{subject}</Link></>}
+      {date && <><span >&gt;</span><span>{date}</span></>}
     </div>
   );
+
+  // 현재 뷰에 따라 다른 컨테이너 클래스를 사용
+  const containerClassName = subject ? "grid-container-calendar" : "grid-container-subjects";
 
   return (
     <div className="page-container">
@@ -216,7 +219,7 @@ const FileExplorerPage = () => {
             </button>
             <Breadcrumbs />
           </div>
-          <div className="grid-container-calendar"> 
+          <div className={containerClassName}>
             {renderContent()}
           </div>
         </div>
