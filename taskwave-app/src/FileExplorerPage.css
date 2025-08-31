@@ -1,50 +1,165 @@
-/* MyPage.css */
+/* FileExplorerPage.css */
 
-/* ... (기존의 모든 MyPage.css 스타일들) ... */
+.explorer-box {
+  background-color: #ffffff;
+  border-radius: 16px;
+  padding: 24px 32px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  width: 100%;
+  max-width: 900px;
+  margin: 40px auto;
+}
 
-/* --- 파일 탐색기 페이지의 파일 아이템 스타일 --- */
-.file-item-container {
+.explorer-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 8px 12px;
-  border-radius: 6px;
-  transition: background-color 0.2s;
+  gap: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e9ecef;
+  margin-bottom: 16px;
 }
 
-.file-item-container:hover {
-  background-color: #f8f9fa;
-}
-
-.file-link {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  text-decoration: none;
-  color: #333;
-  flex-grow: 1;
-  overflow: hidden;
-}
-
-.file-link span {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.delete-file-button {
+.back-button {
   background: none;
-  border: none;
-  color: #999;
+  border: 1px solid transparent;
+  font-size: 20px;
+  color: #555;
   cursor: pointer;
-  font-size: 16px;
-  padding: 6px;
+  padding: 4px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
-  margin-left: 16px;
+  transition: background-color 0.2s;
+}
+
+.back-button:hover {
+  background-color: #f1f3f5;
+}
+
+.breadcrumbs {
+  font-size: 16px;
+  color: #555;
+}
+
+.breadcrumbs a {
+  color: #868e96;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.breadcrumbs a:hover {
+  color: #343a40;
+}
+
+.breadcrumbs span {
+  margin: 0 8px;
+  color: #adb5bd;
+}
+
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 20px;
+}
+
+.folder-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 20px;
+  border-radius: 8px;
+  background-color: #f8f9fa;
+  border: 1px solid #f1f3f5;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  text-decoration: none;
+  color: #343a40;
+  font-weight: 500;
+  text-align: center;
+}
+
+.folder-item:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+  border-color: #dee2e6;
+}
+
+.folder-item svg {
+  font-size: 48px;
+  color: #868e96;
+}
+
+.folder-item span {
+  font-size: 14px;
+  word-break: break-word;
+}
+
+.empty-folder-message {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 40px;
+  color: #868e96;
+}
+
+/* --- 파일 아이템 및 삭제 버튼 스타일 --- */
+
+.file-item-container {
+  display: flex;
+  flex-direction: column; /* 아이콘과 텍스트를 세로로, 버튼을 그 아래에 놓기 위해 */
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  border-radius: 8px;
+  background-color: #f8f9fa;
+  border: 1px solid #f1f3f5;
+  position: relative;
+  transition: all 0.2s ease-in-out;
+}
+
+.file-item-container:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+  border-color: #dee2e6;
+}
+
+.file-link {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-decoration: none;
+  color: #343a40;
+  font-weight: 500;
+  text-align: center;
+  width: 100%;
+}
+
+.file-link svg {
+  font-size: 48px;
+  color: #495057;
+}
+
+.file-link span {
+  font-size: 14px;
+  word-break: break-word;
+  width: 100%;
+}
+
+.delete-file-button {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background: none;
+  border: none;
+  color: #adb5bd;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 4px;
+  border-radius: 50%;
   opacity: 0;
   transition: all 0.2s;
 }
@@ -55,7 +170,7 @@
 
 .delete-file-button:hover {
   color: #d9534f;
-  background-color: #fbebeb;
+  background-color: #f1f3f5;
 }
 
 .delete-file-button:disabled {
@@ -64,6 +179,7 @@
 }
 
 .upload-button-container {
+  grid-column: 1 / -1; /* 전체 너비 차지 */
   margin-bottom: 16px;
   padding-bottom: 16px;
   border-bottom: 1px solid #e9ecef;
@@ -94,6 +210,7 @@
 }
 
 .upload-error {
+  grid-column: 1 / -1;
   color: #d9534f;
   margin-top: 8px;
   padding: 8px;
