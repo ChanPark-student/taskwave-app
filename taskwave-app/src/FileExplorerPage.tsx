@@ -1,11 +1,68 @@
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from './context/AuthContext.tsx';
 import Header from './Header.tsx';
-import { FiFolder, FiFileText, FiArrowLeft, FiUpload, FiTrash2 } from 'react-icons/fi';
+import { FiFolder, FiFileText, FiArrowLeft, FiUpload, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 import './FileExplorerPage.css';
-import { useRef, useState, ChangeEvent } from 'react';
+import { useRef, useState, ChangeEvent, useMemo } from 'react';
 import { EP } from './lib/endpoints';
 import { fetchJSON } from './lib/http';
+
+// --- Calendar-related Helper Functions ---
+const getDaysInMonth = (year: number, month: number) => new Date(year, month + 1, 0).getDate();
+const getFirstDayOfMonth = (year: number, month: number) => new Date(year, month, 1).getDay(); // 0=Sun, 1=Mon
+
+const CalendarView = ({ subjectName, dates }: { subjectName: string, dates: Record<string, any> }) => {
+  const [currentDate, setCurrentDate] = useState(new Date());
+
+  const scheduledDates = useMemo(() => new Set(Object.keys(dates)), [dates]);
+
+  const year = currentDate.getFullYear();
+  const month = currentDate.getMonth(); // 0-11
+
+  const daysInMonth = getDaysInMonth(year, month);
+  let firstDay = getFirstDayOfMonth(year, month);
+  firstDay = firstDay === 0 ? 6 : firstDay - 1; // 0=Mon, 6=Sun
+
+  const calendarDays = Array.from({ length: firstDay }, (_, i) => <div key={`empty-${i}`} className="calendar-day empty"></div>);
+  for (let day = 1; day <= daysInMonth; day++) {
+    const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    const hasSchedule = scheduledDates.has(dateStr);
+    calendarDays.push(
+      hasSchedule ? (
+        <Link to={`/files/${subjectName}/${dateStr}`} key={dateStr} className="calendar-day has-schedule">
+          {day}
+        </Link>
+      ) : (
+        <div key={dateStr} className="calendar-day">
+          {day}
+        </div>
+      )
+    );
+  }
+
+  const goToPreviousMonth = () => setCurrentDate(new Date(year, month - 1, 1));
+  const goToNextMonth = () => setCurrentDate(new Date(year, month + 1, 1));
+
+  return (
+    <div className="calendar-container">
+      <div className="calendar-header">
+        <button onClick={goToPreviousMonth}><FiChevronLeft /></button>
+        <h2>{year}년 {month + 1}월</h2>
+        <button onClick={goToNextMonth}><FiChevronRight /></button>
+      </div>
+      <div className="calendar-grid">
+        <div className="day-name">월</div>
+        <div className="day-name">화</div>
+        <div className="day-name">수</div>
+        <div className="day-name">목</div>
+        <div className="day-name">금</div>
+        <div className="day-name">토</div>
+        <div className="day-name">일</div>
+        {calendarDays}
+      </div>
+    </div>
+  );
+};
 
 const FileExplorerPage = () => {
   const { subject, date } = useParams<{ subject: string; date: string }>();
@@ -18,9 +75,7 @@ const FileExplorerPage = () => {
 
   const handleGoBack = () => navigate(-1);
 
-  const handleUploadClick = () => {
-    fileInputRef.current?.click();
-  };
+  const handleUploadClick = () => fileInputRef.current?.click();
 
   const handleFileSelected = async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -109,15 +164,8 @@ const FileExplorerPage = () => {
       );
     } else if (subject) {
       const subjectData = fileSystem[subject];
-      const dateKeys = subjectData ? Object.keys(subjectData.dates) : [];
-      if (dateKeys.length === 0) return <div className="empty-folder-message">생성된 날짜 폴더가 없습니다.</div>;
-
-      return dateKeys.map(dateKey => (
-        <Link to={`/files/${subject}/${dateKey}`} key={dateKey} className="folder-item">
-          <FiFolder />
-          <span>{dateKey}</span>
-        </Link>
-      ));
+      if (!subjectData) return <div className="empty-folder-message">과목 정보를 찾을 수 없습니다.</div>;
+      return <CalendarView subjectName={subject} dates={subjectData.dates} />;
     } else {
       const subjectFolders = Object.keys(fileSystem)
         .filter(name => name.toLowerCase() !== 'etc')
@@ -160,7 +208,7 @@ const FileExplorerPage = () => {
             </button>
             <Breadcrumbs />
           </div>
-          <div className="grid-container">
+          <div className="grid-container-calendar"> {/* 클래스명 변경 */}
             {renderContent()}
           </div>
         </div>
