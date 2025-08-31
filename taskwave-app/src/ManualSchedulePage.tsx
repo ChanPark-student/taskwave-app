@@ -50,7 +50,11 @@ const ManualSchedulePage = () => {
     try {
       const response = await fetchJSON<{ status: string; message: string }>(
         EP.SCHEDULES_SCRAPE_AND_GENERATE, 
-        { method: 'POST', body: { url, start_date: startDate, end_date: endDate } }
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ url, start_date: startDate, end_date: endDate })
+        }
       );
       setSuccessMessage(response.message || 'URL에서 시간표를 성공적으로 가져왔습니다!');
       setTimeout(() => navigate('/files'), 2000);
@@ -69,7 +73,11 @@ const ManualSchedulePage = () => {
     setLoading(true);
     clearMessages();
     try {
-      await fetchJSON(EP.SCHEDULES_MANUAL, { method: 'POST', body: { slots } });
+      await fetchJSON(EP.SCHEDULES_MANUAL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ slots })
+          });
       setSuccessMessage('시간표가 성공적으로 저장되었습니다!');
       setTimeout(() => navigate('/files'), 2000);
     } catch (err: any) {
