@@ -4,7 +4,7 @@ import { useAuth, EventInfo, DateInfo } from './context/AuthContext.tsx';
 import { FiFolder, FiArrowLeft, FiChevronLeft, FiChevronRight, FiCalendar } from 'react-icons/fi';
 import './FileExplorerPage.css';
 import { useState, useMemo } from 'react';
-import DateDetailModal from './DateDetailModal';
+import AddEventModalV2 from './AddEventModalV2';
 
 const typeClass = (t: string) => (t || '').toLowerCase();
 
@@ -12,10 +12,12 @@ const CalendarView = ({
   subjectName,
   dates,
   onDayClick,
+  onViewAllEventsClick,
 }: {
   subjectName: string;
   dates: Record<string, DateInfo>;
   onDayClick: (date: string) => void;
+  onViewAllEventsClick: () => void;
 }) => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const scheduledDates = useMemo(() => new Set(Object.keys(dates)), [dates]);
@@ -74,7 +76,11 @@ const CalendarView = ({
         <h2>{subjectName} - {year}년 {month + 1}월</h2>
         <button onClick={goToNextMonth}><FiChevronRight /></button>
       </div>
-       
+       <div className="calendar-actions">
+        <button onClick={onViewAllEventsClick} className="view-events-button">
+          <FiCalendar /> 전체 이벤트 보기
+        </button>
+      </div>
       <div className="calendar-grid">
         <div className="day-name">월</div>
         <div className="day-name">화</div>
@@ -89,7 +95,7 @@ const CalendarView = ({
   );
 };
 
-const FileExplorerPage = () => {
+const FileExplorerPageV2 = () => {
   const { subject } = useParams<{ subject: string }>();
   const navigate = useNavigate();
   const { fileSystem, refreshMe } = useAuth();
@@ -107,11 +113,17 @@ const FileExplorerPage = () => {
     setSelectedDate(null);
   };
 
+  const handleViewAllEvents = () => {
+    if(subject) {
+      navigate(`/files/${subject}/events`);
+    }
+  };
+
   const renderContent = () => {
     if (subject) {
       const subjectData = fileSystem[subject];
       if (!subjectData) return <div className="empty-folder-message">과목 정보를 찾을 수 없습니다.</div>;
-      return <CalendarView subjectName={subject} dates={subjectData.dates} onDayClick={handleDayClick} />;
+      return <CalendarView subjectName={subject} dates={subjectData.dates} onDayClick={handleDayClick} onViewAllEventsClick={handleViewAllEvents} />;
     } else {
       const subjectFolders: JSX.Element[] = Object.keys(fileSystem)
         .filter(name => name.toLowerCase() !== 'etc')
@@ -161,10 +173,9 @@ const FileExplorerPage = () => {
         </main>
       </div>
       {isModalOpen && selectedDate && subjectData && (
-        <DateDetailModal
-          subjectName={subject}
+        <AddEventModalV2
           subjectId={subjectData.subject_id}
-          selectedDate={selectedDate}
+          date={selectedDate}
           onClose={handleCloseModal}
           refreshMe={refreshMe}
         />
@@ -173,4 +184,4 @@ const FileExplorerPage = () => {
   );
 };
 
-export default FileExplorerPage;
+export default FileExplorerPageV2;
