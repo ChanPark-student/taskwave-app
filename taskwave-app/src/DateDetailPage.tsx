@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import Header from './Header';
 import { useAuth, FileInfo, EventInfo } from './context/AuthContext';
 import { EP } from './lib/endpoints';
-import { fetchJSON, postWithBody } from './lib/http';
+import { fetchJSON } from './lib/http';
 import { FiFileText, FiTrash2, FiArrowLeft, FiUploadCloud, FiPlusCircle, FiCalendar, FiFile } from 'react-icons/fi';
 import AddEventModal from './AddEventModal';
 import './DateDetailPage.css'; // Import new CSS
