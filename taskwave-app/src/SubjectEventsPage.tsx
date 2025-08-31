@@ -4,7 +4,7 @@ import Header from './Header';
 import { useAuth, EventInfo } from './context/AuthContext';
 import { FiArrowLeft, FiAlertTriangle, FiCheckCircle } from 'react-icons/fi';
 import './SubjectEventsPage.css';
-
+//11
 const typeKOR = (t: string) => ((t || '').toUpperCase() === 'EXAM' ? '시험' : '과제');
 
 interface EventWithDDay extends EventInfo {
