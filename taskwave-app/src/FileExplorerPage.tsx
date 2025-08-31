@@ -1,7 +1,7 @@
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from './context/AuthContext.tsx';
 import Header from './Header.tsx';
-import { FiFolder, FiFileText, FiArrowLeft, FiUpload, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
+import { FiFolder, FiFileText, FiArrowLeft, FiUpload, FiChevronLeft, FiChevronRight, FiTrash2 } from 'react-icons/fi';
 import './FileExplorerPage.css';
 import { useRef, useState, ChangeEvent, useMemo } from 'react';
 import { EP } from './lib/endpoints';
