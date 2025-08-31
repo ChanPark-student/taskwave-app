@@ -2,11 +2,24 @@ import Header from './Header.tsx';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useAuth, EventInfo, DateInfo } from './context/AuthContext.tsx';
 import { FiFolder, FiArrowLeft, FiChevronLeft, FiChevronRight, FiPlusCircle, FiFileText, FiTrash2 } from 'react-icons/fi';
-import { fetchJSON, AppFileInfo } from './lib/http';
+import { fetchJSON } from './lib/http';
 import { EP } from './lib/endpoints';
 import './FileExplorerPage.css';
 import { useState, useMemo } from 'react';
 import AddEventModal from './AddEventModal';
+
+// Local definition of AppFileInfo to bypass module resolution issues
+export interface AppFileInfo {
+  id: string;
+  name: string;
+  file_url: string;
+  mime_type: string;
+  size_bytes?: number;
+  filename: string;
+  filepath: string;
+  is_dir: boolean;
+  children?: AppFileInfo[];
+}
 
 const typeClass = (t: string) => (t || '').toLowerCase();
 
