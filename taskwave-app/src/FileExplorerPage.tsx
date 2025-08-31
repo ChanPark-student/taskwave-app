@@ -38,7 +38,10 @@ const CalendarView = ({
     const map = new Map<string, EventInfo[]>(); // Map<dateStr, List<EventInfo>>
     allEvents.forEach(event => {
       const eventDate = new Date(event.date); // event.date is a string like "YYYY-MM-DD"
-      const currentWarningDate = new Date(eventDate);
+      const warningDays = event.warning_days ?? 0; // Use 0 if warning_days is null/undefined
+
+      for (let i = 0; i <= warningDays; i++) { // Re-inserted for loop
+        const currentWarningDate = new Date(eventDate);
         currentWarningDate.setDate(eventDate.getDate() - i);
         const warningDateStr = currentWarningDate.toISOString().split('T')[0];
 
@@ -46,7 +49,7 @@ const CalendarView = ({
           map.set(warningDateStr, []);
         }
         map.get(warningDateStr)?.push(event);
-      }
+      } // Corrected closing brace for the for loop
     });
     return map;
   }, [allEvents]);
