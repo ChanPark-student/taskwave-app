@@ -4,7 +4,7 @@ import { useAuth, EventInfo, DateInfo } from './context/AuthContext.tsx';
 import { FiFolder, FiArrowLeft, FiChevronLeft, FiChevronRight, FiCalendar } from 'react-icons/fi';
 import './FileExplorerPage.css';
 import { useState, useMemo } from 'react';
-import AddEventModal from './AddEventModal';
+// import AddEventModal from './AddEventModal'; // Temporarily disabled for debugging
 
 const typeClass = (t: string) => (t || '').toLowerCase();
 
@@ -172,14 +172,14 @@ const FileExplorerPage = () => {
           </div>
         </main>
       </div>
-      {isModalOpen && selectedDate && subjectData && (
+      {/* {isModalOpen && selectedDate && subjectData && (
         <AddEventModal
           subjectId={subjectData.subject_id}
           date={selectedDate}
           onClose={handleCloseModal}
           refreshMe={refreshMe}
         />
-      )}
+      )} */}
     </>
   );
 };
