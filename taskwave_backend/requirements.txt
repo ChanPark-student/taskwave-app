@@ -17,10 +17,10 @@ PyJWT>=2.8,<3
 passlib[bcrypt]>=1.7,<2
 
 # 이미지/OCR
-opencv-python-headless>=4.10.0.84
+opencv-python-headless==4.5.5.64
 pytesseract>=0.3.10
 pillow>=10.4.0
 pymupdf>=1.24.10
-numpy>=1.26.0
+numpy<2
 pandas>=2.2.2
 

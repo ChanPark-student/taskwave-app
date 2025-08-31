@@ -1,10 +1,10 @@
 import Header from './Header.tsx';
 
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { useAuth, FileInfo, EventInfo, DateInfo, SubjectInfo } from './context/AuthContext.tsx';
-import { FiFolder, FiFileText, FiArrowLeft, FiUpload, FiChevronLeft, FiChevronRight, FiTrash2, FiX, FiPlus } from 'react-icons/fi';
+import { useAuth, FileInfo, EventInfo, DateInfo } from './context/AuthContext.tsx';
+import { FiFolder, FiFileText, FiArrowLeft, FiChevronLeft, FiChevronRight, FiTrash2, FiX } from 'react-icons/fi';
 import './FileExplorerPage.css';
-import { useRef, useState, ChangeEvent, useMemo, FormEvent } from 'react';
+import { useState, FormEvent, useMemo } from 'react';
 import { EP } from './lib/endpoints';
 import { fetchJSON } from './lib/http';
 
@@ -244,9 +244,9 @@ const CalendarView = ({
         <button onClick={goToPreviousMonth}>
           <FiChevronLeft />
         </button>
-        <h2>
-          {year}년 {month + 1}월
-        </h2>
+                  <h2>
+            {subjectName} - {year}년 {month + 1}월
+          </h2>
         <button onClick={goToNextMonth}>
           <FiChevronRight />
         </button>
@@ -266,7 +266,7 @@ const CalendarView = ({
 };
 
 const FileExplorerPage = () => {
-  const { subject, date } = useParams<{ subject: string; date: string }>();
+  const { subject } = useParams<{ subject: string; date: string }>();
   const navigate = useNavigate();
   const { fileSystem, refreshMe } = useAuth();
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
