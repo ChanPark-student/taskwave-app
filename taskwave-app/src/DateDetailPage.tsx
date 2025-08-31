@@ -1,6 +1,6 @@
 import { useState, useMemo, useRef, ChangeEvent, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useAuth, FileInfo, EventInfo } from './context/AuthContext';
+import { useAuth, AppFileInfo, EventInfo } from './context/AuthContext';
 import { EP } from './lib/endpoints';
 import { fetchJSON } from './lib/http';
 import { FiFileText, FiTrash2, FiUploadCloud, FiPlusCircle, FiArrowLeft } from 'react-icons/fi';
@@ -122,13 +122,13 @@ const DateDetailPage = () => {
                 </div>
                 <div className="item-list">
                     {dateInfo?.files && dateInfo.files.length > 0 ? (
-                    dateInfo.files.map((file: FileInfo) => (
+                    dateInfo.files.map((file: AppFileInfo) => (
                         <div key={file.id} className="list-item">
                         <a href={file.file_url} target="_blank" rel="noopener noreferrer" className="item-link">
                             <FiFileText />
                             <span>{file.name}</span>
                         </a>
-                        <button onClick={() => handleDeleteFile(file.id)} className="delete-item-button"><FiTrash2 /></button>
+                        <button onClick={() => handleDeleteFile(file.id.toString())} className="delete-item-button"><FiTrash2 /></button>
                         </div>
                     ))
                     ) : (
