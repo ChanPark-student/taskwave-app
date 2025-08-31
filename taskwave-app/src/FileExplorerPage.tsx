@@ -157,11 +157,46 @@ const FileExplorerPage = () => {
     setIsAddEventModalOpen(false);
   };
 
+  const handleDeleteFile = async (fileId: string) => {
+    if (window.confirm('정말로 이 파일을 삭제하시겠습니까?')) {
+      try {
+        await fetchJSON(EP.MATERIAL_DELETE(fileId), { method: 'DELETE' });
+        refreshMe(); // Refresh data after deletion
+      } catch (error) {
+        alert('파일 삭제에 실패했습니다.');
+      }
+    }
+  };
+
   const renderContent = () => {
     if (subject) {
       const subjectData = fileSystem[subject];
       if (!subjectData) return <div className="empty-folder-message">과목 정보를 찾을 수 없습니다.</div>;
-      return <CalendarView subjectName={subject} dates={subjectData.dates} onDayClick={handleDayClick} onAddEventClick={handleAddEventClick} />;
+
+      if (subject === 'etc') {
+        // Special handling for 'etc' subject
+        const etcDateInfo = subjectData.dates['unclassified']; // Get the 'unclassified' date info
+        if (!etcDateInfo || etcDateInfo.files.length === 0) {
+          return <div className="empty-folder-message">분류되지 않은 파일이 없습니다.</div>;
+        }
+        return (
+          <div className="item-list file-list-etc"> {/* Use a new class for styling */}
+            {etcDateInfo.files.map((file: FileInfo) => (
+              <div key={file.id} className="list-item">
+                <a href={file.file_url} target="_blank" rel="noopener noreferrer" className="item-link">
+                  <FiFileText />
+                  <span>{file.name}</span>
+                </a>
+                {/* Add delete button for files in etc folder */}
+                <button onClick={() => handleDeleteFile(file.id)} className="delete-item-button"><FiTrash2 /></button>
+              </div>
+            ))}
+          </div>
+        );
+      } else {
+        // Regular subject, show calendar view
+        return <CalendarView subjectName={subject} dates={subjectData.dates} onDayClick={handleDayClick} onAddEventClick={handleAddEventClick} />;
+      }
     } else {
       const subjectFolders: JSX.Element[] = Object.keys(fileSystem)
         .filter(name => name.toLowerCase() !== 'etc')
