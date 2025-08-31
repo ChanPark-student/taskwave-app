@@ -6,7 +6,7 @@ from app.models.event import EventType
 class EventBase(BaseModel):
     title: Optional[str] = None
     event_type: Optional[EventType] = None
-    date: date | None = None
+    date: Optional[date] = None
     warning_days: Optional[int] = Field(3, ge=0, le=14, description="경고 시작일 (0-14일)")
 
 class EventCreate(EventBase):
