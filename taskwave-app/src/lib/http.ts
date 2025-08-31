@@ -56,3 +56,11 @@ export async function fetchJSON<T>(
 
   return (await res.json()) as T;
 }
+
+export type FileInfo = {
+  id: number;
+  filename: string;
+  filepath: string;
+  is_dir: boolean;
+  children?: FileInfo[];
+};
