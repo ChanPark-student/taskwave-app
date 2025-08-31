@@ -79,6 +79,17 @@ const DateDetailPage = () => {
     }
   };
 
+  const handleDeleteEvent = async (eventId: string) => {
+    if (window.confirm('정말로 이 이벤트를 삭제하시겠습니까?')) {
+      try {
+        await fetchJSON(EP.EVENT_DELETE(eventId), { method: 'DELETE' });
+        refreshMe();
+      } catch (error) {
+        alert('이벤트 삭제에 실패했습니다.');
+      }
+    }
+  };
+
   if (!subjectData) {
     return (
         <div className="page-container">
@@ -143,6 +154,8 @@ const DateDetailPage = () => {
                             <span className="event-title">{event.title}</span>
                             <span className="event-type">({typeKOR(event.event_type as string)})</span>
                         </div>
+                        {/* Add delete button here */}
+                        <button onClick={() => handleDeleteEvent(event.id)} className="delete-item-button"><FiTrash2 /></button>
                         </div>
                     ))
                     ) : (
