@@ -13,7 +13,7 @@ export interface EventInfo {
   warning_days: number;
 }
 
-export interface FileInfo {
+export interface AppFileInfo {
   id: string;
   name: string;
   file_url: string;
@@ -23,7 +23,7 @@ export interface FileInfo {
 
 export interface DateInfo {
   session_id: string | null;
-  files: FileInfo[];
+  files: AppFileInfo[];
   events: EventInfo[]; // 단일 객체에서 리스트(배열)로 변경
 }
 
