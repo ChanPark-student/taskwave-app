@@ -1,0 +1,127 @@
+.web-scraper-main-content {
+  width: 100%;
+  max-width: 800px;
+  padding: 40px 24px;
+  margin: 0 auto;
+}
+
+.web-scraper-title {
+  font-size: 32px;
+  font-weight: 800;
+  margin-bottom: 40px;
+  text-align: center;
+}
+
+.web-scraper-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  border: 1px solid #e0e0e0;
+  border-radius: 16px;
+  padding: 32px;
+  background-color: #fdfdfd;
+}
+
+.form-group label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-dark);
+  margin-bottom: 8px;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--border-gray);
+  border-radius: 8px;
+  font-size: 15px;
+  font-family: inherit;
+}
+
+.form-actions {
+  display: flex;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.form-actions button {
+  flex: 1;
+  padding: 12px 24px;
+  border-radius: 8px;
+  background-color: var(--primary-dark-green);
+  color: white;
+  font-size: 16px;
+  font-weight: 700;
+  transition: all 0.2s ease-in-out;
+}
+
+.form-actions button:hover {
+  opacity: 0.9;
+}
+
+.form-actions button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.error-message {
+  color: #d9534f;
+  background-color: #fbebeb;
+  padding: 12px;
+  border-radius: 8px;
+  margin-top: 24px;
+  text-align: center;
+}
+
+.result-box {
+  margin-top: 32px;
+  border: 1px solid #e0e0e0;
+  border-radius: 16px;
+  padding: 32px;
+  background-color: #fdfdfd;
+}
+
+.result-box h2 {
+  font-size: 24px;
+  font-weight: 700;
+  margin-top: 0;
+  margin-bottom: 16px;
+  color: var(--primary-dark-green);
+}
+
+.result-box h3 {
+  font-size: 18px;
+  font-weight: 600;
+  margin-top: 24px;
+  margin-bottom: 12px;
+}
+
+.result-box pre {
+  background-color: #f0f0f0;
+  padding: 16px;
+  border-radius: 8px;
+  white-space: pre-wrap;
+  word-break: break-all;
+  font-family: 'D2Coding', 'Consolas', 'monospace';
+  font-size: 14px;
+  color: #333;
+}
+
+.result-box ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.result-box li {
+  padding: 8px 0;
+  border-bottom: 1px dashed #eee;
+  font-size: 15px;
+  color: #555;
+}
+
+.result-box li:last-child {
+  border-bottom: none;
+}
