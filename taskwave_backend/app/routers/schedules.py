@@ -3,6 +3,9 @@ from sqlalchemy.orm import Session, joinedload
 from uuid import uuid4
 from datetime import date, timedelta
 from typing import List
+from pydantic import BaseModel
+
+from app.services.folder_generator import webscrape, parser as manual_parser
 
 from app.core.deps import get_db, get_current_user
 from app.models.user import User
@@ -14,6 +17,11 @@ router = APIRouter()
 
 WEEKDAY_MAP = {"월": 0, "화": 1, "수": 2, "목": 3, "금": 4, "토": 5, "일": 6}
 
+class ScrapeRequest(BaseModel):
+    url: str
+    start_date: date
+    end_date: date
+
 @router.post("/schedules/recurring", status_code=201)
 def create_recurring_schedule(
     payload: RecurringScheduleIn,
@@ -23,7 +31,6 @@ def create_recurring_schedule(
     """
     지정된 기간과 요일에 따라 반복되는 개인 일정을 생성합니다.
     """
-    # 1. 과목(일정 제목)을 찾거나 새로 생성합니다.
     subject = db.query(Subject).filter(
         Subject.user_id == current_user.id,
         Subject.title == payload.title
@@ -35,22 +42,16 @@ def create_recurring_schedule(
             title=payload.title
         )
         db.add(subject)
-        db.flush() # subject.id를 사용하기 위해 flush
+        db.flush()
 
-    # 2. 날짜 범위 내에서 해당 요일에 세션을 생성합니다.
     target_weekdays = {WEEKDAY_MAP[day] for day in payload.weekdays}
     current_date = payload.start_date
-    
-    # 주차(week_no) 계산을 위한 기준 날짜 (첫 주의 월요일)
     start_monday = payload.start_date - timedelta(days=payload.start_date.weekday())
     sessions_created = 0
 
     while current_date <= payload.end_date:
         if current_date.weekday() in target_weekdays:
-            # 주차 번호 계산
             week_no = (current_date - start_monday).days // 7 + 1
-
-            # 해당 주(Week)가 이미 있는지 확인, 없으면 생성
             week = db.query(Week).filter(
                 Week.subject_id == subject.id,
                 Week.week_no == week_no
@@ -63,9 +64,8 @@ def create_recurring_schedule(
                     month=current_date.month
                 )
                 db.add(week)
-                db.flush() # week.id를 사용하기 위해 flush
+                db.flush()
 
-            # 세션 생성
             session = SessionModel(
                 id=str(uuid4()),
                 week_id=week.id,
@@ -91,48 +91,33 @@ def create_manual_schedule(
 ):
     SEMESTER_WEEKS = 16
     today = date.today()
-    
     subject_cache = {}
 
     for slot in payload.slots:
         subject_title = slot.subject_title
-        
-        if subject_title in subject_cache:
-            subject = subject_cache[subject_title]
-        else:
+        if subject_title not in subject_cache:
             subject = db.query(Subject).filter(
                 Subject.user_id == current.id,
                 Subject.title == subject_title
             ).first()
             if not subject:
-                subject = Subject(
-                    id=str(uuid4()),
-                    user_id=current.id,
-                    title=subject_title
-                )
+                subject = Subject(id=str(uuid4()), user_id=current.id, title=subject_title)
                 db.add(subject)
             subject_cache[subject_title] = subject
+        else:
+            subject = subject_cache[subject_title]
 
         target_weekday = WEEKDAY_MAP.get(slot.weekday)
-        if target_weekday is None:
-            continue
+        if target_weekday is None: continue
 
-        days_ahead = target_weekday - today.weekday()
-        if days_ahead < 0:
-            days_ahead += 7
+        days_ahead = (target_weekday - today.weekday() + 7) % 7
         first_date = today + timedelta(days=days_ahead)
 
         for week_num in range(1, SEMESTER_WEEKS + 1):
             current_date = first_date + timedelta(weeks=week_num - 1)
-
             week = next((w for w in subject.weeks if w.week_no == week_num), None)
-
             if not week:
-                week = Week(
-                    id=str(uuid4()),
-                    week_no=week_num,
-                    month=current_date.month
-                )
+                week = Week(id=str(uuid4()), week_no=week_num, month=current_date.month)
                 subject.weeks.append(week)
                 db.add(week)
 
@@ -148,6 +133,67 @@ def create_manual_schedule(
 
     db.commit()
     return {"status": "ok", "message": f"{len(payload.slots)} schedule slots processed."}
+
+@router.post("/schedules/scrape-from-url")
+def scrape_and_create_schedule(
+    payload: ScrapeRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """
+    주어진 URL에서 시간표를 스크래핑하고, 파싱하여 DB에 저장합니다.
+    """
+    try:
+        scraped_entries = webscrape.parse_schedule_from_web(payload.url)
+        if not scraped_entries:
+            raise HTTPException(status_code=404, detail="Failed to scrape any schedule entries from the URL.")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Web scraping failed: {str(e)}")
+
+    text_block_for_parser = "\n".join([f"{e['subject']},{e['weekday_ko']},{e['start']}-{e['end']}" for e in scraped_entries])
+
+    try:
+        class_entries = manual_parser.parse_manual_entries(text_block_for_parser)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Failed to parse scraped data: {str(e)}")
+
+    subject_cache = {}
+    start_monday = payload.start_date - timedelta(days=payload.start_date.weekday())
+
+    for entry in class_entries:
+        subject_title = entry.subject
+        subject = subject_cache.get(subject_title)
+        if not subject:
+            subject = db.query(Subject).filter(Subject.user_id == current_user.id, Subject.title == subject_title).first()
+            if not subject:
+                subject = Subject(id=str(uuid4()), user_id=current_user.id, title=subject_title)
+                db.add(subject)
+                db.flush()
+            subject_cache[subject_title] = subject
+
+        current_date = payload.start_date
+        while current_date <= payload.end_date:
+            if current_date.weekday() == entry.weekday:
+                week_no = (current_date - start_monday).days // 7 + 1
+                week = db.query(Week).filter(Week.subject_id == subject.id, Week.week_no == week_no).first()
+                if not week:
+                    week = Week(id=str(uuid4()), subject_id=subject.id, week_no=week_no, month=current_date.month)
+                    db.add(week)
+                    db.flush()
+
+                session = SessionModel(
+                    id=str(uuid4()),
+                    week_id=week.id,
+                    date=current_date,
+                    title=subject.title,
+                    start_time=entry.start,
+                    end_time=entry.end
+                )
+                db.add(session)
+            current_date += timedelta(days=1)
+    
+    db.commit()
+    return {"status": "ok", "message": "Schedule scraped and saved successfully."}
 
 @router.get("/schedules/ping")
 def ping():
@@ -183,8 +229,7 @@ def get_week_view(
                 day_of_week=weekday_to_kor.get(s.date.weekday(), "알수없음"),
                 start_time=s.start_time,
                 end_time=s.end_time,
-                # 향후 과목별 색상을 여기에 할당할 수 있습니다.
-                color="#4A90E2" 
+                color="#4A90E2"
             )
         )
     return result

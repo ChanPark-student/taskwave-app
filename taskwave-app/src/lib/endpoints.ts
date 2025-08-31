@@ -35,6 +35,7 @@ export const EP = {
   // 스케줄 생성
   SCHEDULES_MANUAL: '/api/schedules/manual',
   SCHEDULES_RECURRING: '/api/schedules/recurring',
+  SCHEDULES_SCRAPE_AND_GENERATE: '/api/schedules/scrape-from-url',
 
   // 헬스체크
   SCHEDULES_PING: '/api/schedules/ping',
