@@ -2,7 +2,7 @@ import Header from './Header.tsx';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useAuth, EventInfo, DateInfo } from './context/AuthContext.tsx';
 import { FiFolder, FiArrowLeft, FiChevronLeft, FiChevronRight, FiPlusCircle, FiFileText, FiTrash2 } from 'react-icons/fi';
-import { fetchJSON, FileInfo } from './lib/http';
+import { fetchJSON, AppFileInfo } from './lib/http';
 import { EP } from './lib/endpoints';
 import './FileExplorerPage.css';
 import { useState, useMemo } from 'react';
@@ -38,10 +38,7 @@ const CalendarView = ({
     const map = new Map<string, EventInfo[]>(); // Map<dateStr, List<EventInfo>>
     allEvents.forEach(event => {
       const eventDate = new Date(event.date); // event.date is a string like "YYYY-MM-DD"
-      const warningDays = event.warning_days ?? 0; // Use 0 if warning_days is null/undefined
-
-      for (let i = 0; i <= warningDays; i++) {
-        const currentWarningDate = new Date(eventDate);
+      const currentWarningDate = new Date(eventDate);
         currentWarningDate.setDate(eventDate.getDate() - i);
         const warningDateStr = currentWarningDate.toISOString().split('T')[0];
 
@@ -183,7 +180,7 @@ const FileExplorerPage = () => {
         }
         return (
           <div className="item-list file-list-etc"> {/* Use a new class for styling */}
-            {etcDateInfo.files.map((file: FileInfo) => (
+            {etcDateInfo.files.map((file: AppFileInfo) => (
               <div key={file.id} className="list-item">
                 <a href={file.file_url} target="_blank" rel="noopener noreferrer" className="item-link">
                   <FiFileText />

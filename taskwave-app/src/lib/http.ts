@@ -57,12 +57,12 @@ export async function fetchJSON<T>(
   return (await res.json()) as T;
 }
 
-export type FileInfo = {
+export type AppFileInfo = {
   id: number;
   filename: string;
   filepath: string;
   is_dir: boolean;
   file_url: string; 
   name: string;     
-  children?: FileInfo[];
+  children?: AppFileInfo[];
 };
