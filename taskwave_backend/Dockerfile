@@ -10,7 +10,13 @@ RUN echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/google-chrome.gpg] http://
 RUN apt-get update && apt-get install -y google-chrome-stable --no-install-recommends && rm -rf /var/lib/apt/lists/*
 
 # Install Chromedriver
-RUN CHROMEDRIVER_URL=$(wget -qO- https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions-with-downloads.json | grep -o 'https://[^"]*chromedriver_linux64.zip' | head -n 1)     && wget -q "$CHROMEDRIVER_URL" -O chromedriver.zip     && unzip chromedriver.zip -d /     && mv /chromedriver-linux64/chromedriver /usr/local/bin/     && rm -rf /chromedriver-linux64 chromedriver.zip
+# NOTE: This is a hardcoded version. It might need to be updated in the future.
+# You can find the latest versions at https://googlechromelabs.github.io/chrome-for-testing/
+ENV CHROMEDRIVER_VERSION="121.0.6167.85"
+RUN wget -q https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/${CHROMEDRIVER_VERSION}/linux64/chromedriver-linux64.zip -O chromedriver.zip \
+    && unzip chromedriver.zip -d / \
+    && mv /chromedriver-linux64/chromedriver /usr/local/bin/ \
+    && rm -rf /chromedriver-linux64 chromedriver.zip
 
 COPY requirements.txt ./ 
 RUN pip install --no-cache-dir -r requirements.txt
