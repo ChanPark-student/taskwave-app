@@ -19,7 +19,7 @@ RUN mkdir -p /app/media/timetables
 
 # ★ CRLF 제거 후 실행권한 부여 (핵심)
 COPY start.sh /app/start.sh
-RUN sed -i 's/\r$//' /app/start.sh && chmod +x /app/start.sh
+RUN sed -i 's/$//' /app/start.sh && chmod +x /app/start.sh
 
 EXPOSE 8000
 CMD ["/app/start.sh"]
