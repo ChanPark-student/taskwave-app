@@ -1,32 +1,38 @@
-<<<<<<< HEAD
-node_modules/
-*.log
-*.sqlite
-dist/
-.env
-
-taskwave_backend/.venv/
-taskwave_backend/__pycache__/
-alembic/__pycache__/
-=======
 # Logs
-logs
+logs/
 *.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
+error.txt
+work.txt
 
-node_modules
-dist
-dist-ssr
-*.local
+# Dependency directories
+node_modules/
+/node_modules/
+taskwave_backend/.venv/
+venv/
+env/
+
+# Build artifacts
+dist/
+dist-ssr/
+build/
+*.sqlite
+
+# Python specific
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
 
 # Editor directories and files
-.vscode/*
+.vscode/
 !.vscode/extensions.json
-.idea
+.idea/
 .DS_Store
 *.suo
 *.ntvs*
@@ -34,25 +40,14 @@ dist-ssr
 *.sln
 *.sw?
 
-# 의존성 모듈
-/node_modules
-
-# 빌드 결과물
-/dist
-/build
-
-# IDE 및 OS 관련 파일
+# Environment variables
 .env
-.DS_Store
-.idea/
-.vscode/
+*.local
 
-# 로그
-npm-debug.log*
-yarn-error.log*
-.npm/
-
-# Vite 관련 캐시 파일
+# Vite related cache files
 .vite/
 .vite-temp/
->>>>>>> 9394b6e007ab0482a5055f495b1ffdad315cf027
+
+# Other
+tmp/
+temp/
