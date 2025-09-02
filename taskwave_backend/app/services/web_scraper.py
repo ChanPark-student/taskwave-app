@@ -597,8 +597,8 @@ def parse_schedule_from_web(
         if not res: raise RuntimeError("CSS 기반 파싱 실패.")
         return res
 
-    # auto: kor → dom → text → css
-    for fn in (run_kor, run_dom, run_text, run_css):
+    # auto: dom → kor → text → css
+    for fn in (run_dom, run_kor, run_text, run_css):
         r = fn()
         if r: return r
     raise RuntimeError("파싱 실패(KOR/DOM/TEXT/CSS 모두 실패). URL/로그인 여부를 확인하세요.")
