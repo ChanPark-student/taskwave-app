@@ -27,6 +27,9 @@ services:
     staticPublishPath: dist
     routes:
       - type: rewrite
+        source: /api/:path*
+        destination: https://taskwave-api.onrender.com/api/:path*
+      - type: rewrite
         source: /*
         destination: /index.html
 

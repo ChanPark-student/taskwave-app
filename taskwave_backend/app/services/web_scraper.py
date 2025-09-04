@@ -18,7 +18,7 @@ except Exception:
 # ───────── Driver singleton ─────────
 _driver = None
 _cfg = None
-_lock = Lock()
+_lock = Lock()  
 
 def _make_options(*, headless: bool, user_data_dir: Optional[str], profile_dir: Optional[str]) -> Options:
     opts = Options()

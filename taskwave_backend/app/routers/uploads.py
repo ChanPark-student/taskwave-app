@@ -90,9 +90,8 @@ async def upload_and_auto_sort_file(
     return mat
 
 
-@router.post("/timetable/upload")
-async def upload_timetable(
-    file: UploadFile = File(...),
+
+ploadFile = File(...),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
