@@ -89,9 +89,9 @@ async def upload_and_auto_sort_file(
     db.refresh(mat)
     return mat
 
-
-
-ploadFile = File(...),
+@router.post("/timetable/upload")
+async def upload_timetable(
+    file: UploadFile = File(...),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
