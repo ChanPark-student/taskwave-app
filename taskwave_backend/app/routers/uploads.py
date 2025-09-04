@@ -15,7 +15,7 @@ from app.models.schedule import Week, Session as SessionModel
 from app.models.material import Material
 from app.schemas.material import MaterialOut
 from app.services.storage import StorageService
-from app.services.timetable import ParsedSlot, parse_timetable_from_file
+# from app.services.timetable import ParsedSlot, parse_timetable_from_file
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -89,38 +89,38 @@ async def upload_and_auto_sort_file(
     db.refresh(mat)
     return mat
 
-@router.post("/timetable/upload")
-async def upload_timetable(
-    file: UploadFile = File(...),
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
-):
-    """
-    시간표 파일(이미지 또는 PDF)을 업로드하여 OCR로 분석하고 파싱된 슬롯 목록을 반환합니다.
-    """
-    suffix = Path(file.filename or "").suffix.lower()
-    save_dir = Path(settings.MEDIA_ROOT) / "timetables"
-    save_dir.mkdir(parents=True, exist_ok=True)
-    save_path = save_dir / f"{uuid4()}{suffix}"
-
-    try:
-        content = await file.read()
-        save_path.write_bytes(content)
-    except Exception:
-        logger.exception("파일 저장 실패")
-        raise HTTPException(status_code=500, detail="파일을 서버에 저장하는 중 오류가 발생했습니다.")
-
-    try:
-        if suffix == ".pdf" or suffix in ALLOWED_IMAGE_SUFFIX:
-            slots, raw_text = parse_timetable_from_file(save_path)
-        else:
-            raise HTTPException(status_code=400, detail="지원하는 형식은 pdf, png, jpg, jpeg, webp 입니다.")
-    except Exception as e:
-        logger.exception("OCR/파싱 실패")
-        raise HTTPException(status_code=422, detail=f"시간표 분석에 실패했습니다: {type(e).__name__}: {e}")
-
-    return {
-        "count": len(slots),
-        "slots": [s.__dict__ for s in slots],
-        "debug_raw_ocr_text": raw_text,
-    }
+# @router.post("/timetable/upload")
+# async def upload_timetable(
+#     file: UploadFile = File(...),
+#     db: Session = Depends(get_db),
+#     current_user: User = Depends(get_current_user),
+# ):
+#     """
+#     시간표 파일(이미지 또는 PDF)을 업로드하여 OCR로 분석하고 파싱된 슬롯 목록을 반환합니다.
+#     """
+#     suffix = Path(file.filename or "").suffix.lower()
+#     save_dir = Path(settings.MEDIA_ROOT) / "timetables"
+#     save_dir.mkdir(parents=True, exist_ok=True)
+#     save_path = save_dir / f"{uuid4()}{suffix}"
+# 
+#     try:
+#         content = await file.read()
+#         save_path.write_bytes(content)
+#     except Exception:
+#         logger.exception("파일 저장 실패")
+#         raise HTTPException(status_code=500, detail="파일을 서버에 저장하는 중 오류가 발생했습니다.")
+# 
+#     try:
+#         if suffix == ".pdf" or suffix in ALLOWED_IMAGE_SUFFIX:
+#             slots, raw_text = parse_timetable_from_file(save_path)
+#         else:
+#             raise HTTPException(status_code=400, detail="지원하는 형식은 pdf, png, jpg, jpeg, webp 입니다.")
+#     except Exception as e:
+#         logger.exception("OCR/파싱 실패")
+#         raise HTTPException(status_code=422, detail=f"시간표 분석에 실패했습니다: {type(e).__name__}: {e}")
+# 
+#     return {
+#         "count": len(slots),
+#         "slots": [s.__dict__ for s in slots],
+#         "debug_raw_ocr_text": raw_text,
+#     }
