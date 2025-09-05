@@ -17,6 +17,9 @@ echo "[start.sh] passlib[bcrypt] reinstalled."
 
 # 마이그레이션
 echo "[start.sh] Running database migrations..."
+# 288fb98f9629 이전 버전으로 다운그레이드하여 깨진 상태를 해결하고, 실패 시 오류를 무시합니다.
+alembic downgrade ecdc6627387a || true
+# 최신 버전으로 업그레이드합니다.
 alembic upgrade head
 echo "[start.sh] Migrations complete."
 

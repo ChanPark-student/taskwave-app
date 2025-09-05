@@ -18,4 +18,4 @@ class Event(Base):
     date: Mapped[Date] = mapped_column(Date, nullable=False)
     warning_days: Mapped[int] = mapped_column(Integer, default=3, nullable=False)
 
-    subject = relationship("Subject")
+    subject = relationship("Subject", back_populates="events")

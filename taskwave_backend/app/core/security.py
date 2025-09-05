@@ -12,7 +12,7 @@ from passlib.context import CryptContext
 from app.core.config import settings
 
 # 비밀번호 해시 컨텍스트
-pwd_context = CryptContext(schemes=["pbkdf2_sha256"], deprecated="auto")
+pwd_context = CryptContext(schemes=["pbkdf2_sha256", "bcrypt", "argon2", "scrypt"], deprecated="auto")
 
 # Swagger/요청에서 Authorization: Bearer <token> 읽기용 스킴
 bearer_scheme = HTTPBearer(auto_error=False)
