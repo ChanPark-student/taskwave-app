@@ -12,7 +12,7 @@ echo "[start.sh] Using TESSERACT_CMD=$TESSERACT_CMD"
 
 # 마이그레이션
 echo "[start.sh] Running database migrations..."
-conda run -n my_project alembic upgrade head
+alembic upgrade head
 echo "[start.sh] Migrations complete."
 
 # 앱 실행
