@@ -10,8 +10,10 @@ if [ ! -x "$TESSERACT_CMD" ]; then
 fi
 echo "[start.sh] Using TESSERACT_CMD=$TESSERACT_CMD"
 
-# 마이그레이션 (실패해도 서비스 계속)
-alembic upgrade head || echo "alembic not configured or failed; continuing..."
+# 마이그레이션
+echo "[start.sh] Running database migrations..."
+conda run -n my_project alembic upgrade head
+echo "[start.sh] Migrations complete."
 
 # 앱 실행
 exec uvicorn app.main:app --host 0.0.0.0 --port "${PORT:-8000}"
