@@ -54,14 +54,16 @@ def get_files_structure(
             if material.session_id:
                 materials_by_session_id[material.session_id].append(FileInfo.model_validate(material))
             elif material.date and material.subject_id:
-                key = (material.subject_id, material.date.isoformat())
-                materials_by_date_and_subject[key].append(FileInfo.model_validate(material))
+                if material.date: # Check if date is not None
+                    key = (material.subject_id, material.date.isoformat())
+                    materials_by_date_and_subject[key].append(FileInfo.model_validate(material))
             else:
                 unclassified_materials.append(FileInfo.model_validate(material))
 
         events_by_date_and_subject = defaultdict(list)
         for event in events:
-            events_by_date_and_subject[(event.date.isoformat(), event.subject_id)].append(EventOut.model_validate(event))
+            if event.date: # Check if date is not None
+                events_by_date_and_subject[(event.date.isoformat(), event.subject_id)].append(EventOut.model_validate(event))
 
         # 3. 최종 파일 시스템 구조 빌드
         file_system: Dict[str, SubjectInfo] = {}
@@ -73,16 +75,18 @@ def get_files_structure(
             # 세션 기반 날짜 채우기
             for week in subject.weeks:
                 for session in week.sessions:
-                    date_str = session.date.isoformat()
-                    dates_for_subject[date_str].session_id = session.id
-                    dates_for_subject[date_str].files.extend(materials_by_session_id.get(session.id, []))
+                    if session.date: # Check if date is not None
+                        date_str = session.date.isoformat()
+                        dates_for_subject[date_str].session_id = session.id
+                        dates_for_subject[date_str].files.extend(materials_by_session_id.get(session.id, []))
 
             # 이벤트 기반 날짜 채우기 (세션이 없는 날에도 이벤트가 있을 수 있음)
             for event in subject.events:
-                date_str = event.date.isoformat()
-                # 이벤트 목록은 덮어쓰지 않고 추가
-                if event not in dates_for_subject[date_str].events:
-                     dates_for_subject[date_str].events.append(EventOut.model_validate(event))
+                if event.date: # Check if date is not None
+                    date_str = event.date.isoformat()
+                    # 이벤트 목록은 덮어쓰지 않고 추가
+                    if event not in dates_for_subject[date_str].events:
+                         dates_for_subject[date_str].events.append(EventOut.model_validate(event))
 
             # 날짜만 지정된 Material 채우기
             for (subj_id, date_str), mats in materials_by_date_and_subject.items():

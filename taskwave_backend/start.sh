@@ -10,6 +10,11 @@ if [ ! -x "$TESSERACT_CMD" ]; then
 fi
 echo "[start.sh] Using TESSERACT_CMD=$TESSERACT_CMD"
 
+# bcrypt 재설치 (bcrypt 오류 방지)
+echo "[start.sh] Reinstalling passlib[bcrypt]..."
+pip install --force-reinstall passlib[bcrypt]
+echo "[start.sh] passlib[bcrypt] reinstalled."
+
 # 마이그레이션
 echo "[start.sh] Running database migrations..."
 alembic upgrade head
