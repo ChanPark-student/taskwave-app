@@ -1,4 +1,4 @@
-from sqlalchemy import String, Integer, DateTime, func, ForeignKey
+from sqlalchemy import String, Integer, DateTime, func, ForeignKey, Date
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.db.base import Base
 
@@ -9,6 +9,7 @@ class Material(Base):
     subject_id: Mapped[str] = mapped_column(ForeignKey("subjects.id"), index=True, nullable=False)
     week_id: Mapped[str | None] = mapped_column(ForeignKey("weeks.id"), index=True, nullable=True)
     session_id: Mapped[str | None] = mapped_column(ForeignKey("sessions.id"), index=True, nullable=True)
+    date: Mapped[str | None] = mapped_column(Date, nullable=True)
 
     name: Mapped[str] = mapped_column(String, nullable=False)
     mime_type: Mapped[str] = mapped_column(String, nullable=False)

@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form, Q
 from sqlalchemy.orm import Session
 from uuid import uuid4
 from typing import Optional
+from datetime import datetime
 from app.core.deps import get_db, get_current_user
 from app.schemas.material import MaterialOut
 from app.models.user import User
@@ -9,7 +10,7 @@ from app.models.subject import Subject
 from app.models.schedule import Week, Session as SessionModel
 from app.models.material import Material
 from app.services.storage import StorageService
-import os  # ← 이 줄 추가
+import os
 
 router = APIRouter()
 
@@ -17,8 +18,7 @@ router = APIRouter()
 async def upload_material(
     file: UploadFile = File(...),
     subject_id: str = Form(...),
-    week_id: Optional[str] = Form(None),
-    session_id: Optional[str] = Form(None),
+    date: Optional[str] = Form(None),
     name: Optional[str] = Form(None),
     db: Session = Depends(get_db),
     current: User = Depends(get_current_user),
@@ -27,14 +27,13 @@ async def upload_material(
     if not subj or subj.user_id != current.id:
         raise HTTPException(status_code=404, detail="Subject not found")
 
-    if week_id:
-        week = db.get(Week, week_id)
-        if not week or week.subject_id != subject_id:
-            raise HTTPException(status_code=400, detail="Invalid week_id")
-    if session_id:
-        sess = db.get(SessionModel, session_id)
-        if not sess:
-            raise HTTPException(status_code=400, detail="Invalid session_id")
+    # Parse date if provided
+    parsed_date = None
+    if date:
+        try:
+            parsed_date = datetime.strptime(date, "%Y-%m-%d").date()
+        except ValueError:
+            raise HTTPException(status_code=400, detail="Invalid date format. Use YYYY-MM-DD.")
 
     storage = StorageService()
     file_url, abs_path = await storage.save_upload(file, subdir="materials")
@@ -43,8 +42,9 @@ async def upload_material(
         id=str(uuid4()),
         owner_id=current.id,
         subject_id=subject_id,
-        week_id=week_id,
-        session_id=session_id,
+        week_id=None,
+        session_id=None,
+        date=parsed_date,
         name=name or (file.filename or "file"),
         mime_type=file.content_type or "application/octet-stream",
         file_url=file_url,
