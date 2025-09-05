@@ -47,17 +47,13 @@ def get_files_structure(
 
         # 2. 빠른 조회를 위해 데이터를 딕셔너리로 가공
         materials_by_session_id = defaultdict(list)
-        materials_by_date_and_subject = defaultdict(list)
-        unclassified_materials = []
+        unclassified_materials = [] # New list for materials with no session_id
 
         for material in materials:
             if material.session_id:
                 materials_by_session_id[material.session_id].append(FileInfo.model_validate(material))
-            elif material.date and material.subject_id:
-                key = (material.subject_id, material.date.isoformat())
-                materials_by_date_and_subject[key].append(FileInfo.model_validate(material))
             else:
-                unclassified_materials.append(FileInfo.model_validate(material))
+                unclassified_materials.append(FileInfo.model_validate(material)) # Add to unclassified
 
         events_by_date_and_subject = defaultdict(list)
         for event in events:
@@ -83,15 +79,6 @@ def get_files_structure(
                 # 이벤트 목록은 덮어쓰지 않고 추가
                 if event not in dates_for_subject[date_str].events:
                      dates_for_subject[date_str].events.append(EventOut.model_validate(event))
-
-            # 날짜만 지정된 Material 채우기
-            for (subj_id, date_str), mats in materials_by_date_and_subject.items():
-                if subj_id == subject.id:
-                    # 중복 추가를 방지하기 위해 파일 ID 세트 사용
-                    existing_file_ids = {f.id for f in dates_for_subject[date_str].files}
-                    for mat in mats:
-                        if mat.id not in existing_file_ids:
-                            dates_for_subject[date_str].files.append(mat)
 
             if dates_for_subject:
                 file_system[subject.title] = SubjectInfo(
