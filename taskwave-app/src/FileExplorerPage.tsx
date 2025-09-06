@@ -161,6 +161,14 @@ const FileExplorerPage = () => {
     setIsAddEventModalOpen(false);
   };
 
+  const handleBackClick = () => {
+    if (subject) {
+      navigate('/files');
+    } else {
+      navigate('/');
+    }
+  };
+
   const handleDeleteFile = async (fileId: string) => {
     if (window.confirm('정말로 이 파일을 삭제하시겠습니까?')) {
       try {
@@ -232,7 +240,7 @@ const FileExplorerPage = () => {
         <main className="main-content">
           <div className="explorer-box">
             <div className="explorer-header">
-              <button onClick={() => navigate(-1)} className="back-button" title="뒤로가기">
+              <button onClick={handleBackClick} className="back-button" title="뒤로가기">
                 <FiArrowLeft />
               </button>
               <div className="breadcrumbs">
