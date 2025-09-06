@@ -243,7 +243,7 @@ const FileExplorerPage = () => {
         <main className="main-content">
           <div className="explorer-box">
             <div className="explorer-header">
-              <button onClick={() => navigate(-1)} className="back-button" title="뒤로가기">
+              <button onClick={() => subject ? navigate('/files') : navigate('/')} className="back-button" title="뒤로가기">
                 <FiArrowLeft />
               </button>
               <div className="breadcrumbs">
