@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, ChangeEvent, FormEvent, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FiUploadCloud, FiChevronUp, FiChevronDown, FiTrash2 } from 'react-icons/fi';
+import { FiChevronUp, FiChevronDown, FiTrash2 } from 'react-icons/fi';
 import Header from './Header.tsx';
 import { useAuth, User } from './context/AuthContext.tsx'; // FileSystemStructure 임포트 제거
 import { fetchJSON } from './lib/http';
@@ -402,21 +402,14 @@ const ScheduleListManager = () => {
 
 
 const MyPage = () => {
-  const navigate = useNavigate();
   const { user, updateProfile, refreshMe } = useAuth();
   const [isEditingProfile, setIsEditingProfile] = useState(false);
   const [tempProfile, setTempProfile] = useState<User | null>(user);
-  const [timetableImage, setTimetableImage] = useState<string | null>(null);
   const [showRecurringForm, setShowRecurringForm] = useState(false);
 
   useEffect(() => {
     setTempProfile(user);
   }, [user]);
-
-  const handleImageUpload = (e: ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) setTimetableImage(URL.createObjectURL(file));
-  };
 
   const handleEditClick = () => {
     setTempProfile(user);
