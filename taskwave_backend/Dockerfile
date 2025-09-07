@@ -23,8 +23,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . . 
 
-RUN alembic upgrade head 
-
 
 RUN mkdir -p /app/media/timetables
 
