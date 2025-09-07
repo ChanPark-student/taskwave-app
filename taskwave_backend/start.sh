@@ -1,6 +1,7 @@
 #!/bin/sh
 set -e
 export PYTHONUNBUFFERED=1
+export PYTHONPATH=${PYTHONPATH}:/app
 
 # --- Tesseract 경로 보정 ---
 export TESSERACT_CMD="${TESSERACT_CMD:-/usr/bin/tesseract}"
