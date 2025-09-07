@@ -16,17 +16,27 @@ echo "[start.sh] Reinstalling passlib[bcrypt]..."
 pip install --force-reinstall passlib[bcrypt] >/dev/null
 echo "[start.sh] passlib[bcrypt] reinstalled."
 
-# --- DATABASE_URL 보정 (Render Postgres는 SSL 필요) ---
+# --- DATABASE_URL 보정 (psycopg v3 접두어 + sslmode=require) ---
 if [ -n "${DATABASE_URL:-}" ]; then
   case "$DATABASE_URL" in
-    postgres://*|postgresql://*)
+    postgres://*)
+      DATABASE_URL="postgresql+psycopg://${DATABASE_URL#postgres://}"
+      ;;
+    postgresql://*)
+      # 이미 +psycopg면 유지
       case "$DATABASE_URL" in
-        *sslmode=*) : ;;
-        *\?*) export DATABASE_URL="${DATABASE_URL}&sslmode=require" ;;
-        *)    export DATABASE_URL="${DATABASE_URL}?sslmode=require" ;;
+        postgresql+psycopg://*) : ;;
+        *) DATABASE_URL="postgresql+psycopg://${DATABASE_URL#postgresql://}" ;;
       esac
-    ;;
+      ;;
   esac
+  # SSL 보정
+  case "$DATABASE_URL" in
+    *sslmode=*) : ;;
+    *\?*) DATABASE_URL="${DATABASE_URL}&sslmode=require" ;;
+    *)    DATABASE_URL="${DATABASE_URL}?sslmode=require" ;;
+  esac
+  export DATABASE_URL
 fi
 echo "[start.sh] Using DATABASE_URL=${DATABASE_URL:+(set)}"
 
@@ -37,13 +47,14 @@ import os, time, sys
 from sqlalchemy import create_engine
 url = os.environ.get("DATABASE_URL")
 if not url:
-  print("DATABASE_URL not set", file=sys.stderr); sys.exit(2)
+    print("DATABASE_URL not set", file=sys.stderr); sys.exit(2)
 for i in range(40):
-  try:
-    create_engine(url, pool_pre_ping=True).connect().close()
-    print("DB is ready"); sys.exit(0)
-  except Exception as e:
-    print(f"DB not ready ({i+1}/40): {e}"); time.sleep(2)
+    try:
+        create_engine(url, pool_pre_ping=True).connect().close()
+        print("DB is ready"); sys.exit(0)
+    except Exception as e:
+        print(f"DB not ready ({i+1}/40): {e}")
+        time.sleep(2)
 print("DB never became ready", file=sys.stderr); sys.exit(3)
 PY
 
