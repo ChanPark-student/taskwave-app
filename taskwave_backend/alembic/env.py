@@ -11,8 +11,10 @@ config = context.config
 
 # --- /app 를 PYTHONPATH에 추가 (컨테이너 기준) ---
 BASE_DIR = Path(__file__).resolve().parents[1]  # /app
+print(f"BASE_DIR: {BASE_DIR}")
 if str(BASE_DIR) not in sys.path:
     sys.path.insert(0, str(BASE_DIR))
+print(f"sys.path: {sys.path}")
 
 # --- 로깅 설정 (alembic.ini가 있으면 적용) ---
 if config.config_file_name:
