@@ -23,6 +23,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . . 
 
+RUN alembic upgrade head 
+
+
 RUN mkdir -p /app/media/timetables
 
 # ★ CRLF 제거 후 실행권한 부여 (핵심)
