@@ -58,7 +58,7 @@ origins: List[str] = _parse_origins(getattr(settings, "BACKEND_CORS_ORIGINS", No
 if not origins and os.getenv("FRONTEND_URL"):
     origins = _parse_origins(os.environ["FRONTEND_URL"])
 if not origins:
-    origins = ["http://localhost:5173", "https://taskwave-app.onrender.com"]
+    origins = ["http://localhost:5173", "https://taskwave-app.onrender.com", "https://taskwave-app-test-f.onrender.com"]
 if "https://taskwave-app.onrender.com" not in origins:
     origins.append("https://taskwave-app.onrender.com")
 
