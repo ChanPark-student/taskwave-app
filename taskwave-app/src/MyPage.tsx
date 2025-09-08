@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, ChangeEvent, FormEvent, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+//import { useNavigate } from 'react-router-dom';
 import { FiChevronUp, FiChevronDown, FiTrash2 } from 'react-icons/fi';
 import Header from './Header.tsx';
 import { useAuth, User } from './context/AuthContext.tsx'; // FileSystemStructure 임포트 제거
